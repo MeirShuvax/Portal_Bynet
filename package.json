@@ -1,9 +1,20 @@
 {
-  "dependencies": {
-    "@lordicon/element": "^1.11.0",
-    "lottie-web": "^5.13.0",
-    "multer": "^2.0.2",
-    "socket.io": "^4.8.1",
-    "swiper": "^11.2.10"
+  "name": "employee-portal",
+  "version": "1.0.0",
+  "description": "Employee Portal - Full Stack Application",
+  "scripts": {
+    "install-all": "cd employee-portal-server && npm install && cd ../employee-portal-client && npm install",
+    "build": "cd employee-portal-client && npm run build",
+    "start": "cd employee-portal-server && npm start",
+    "start:dev": "concurrently \"npm run start:server\" \"npm run start:client\"",
+    "start:server": "cd employee-portal-server && npm start",
+    "start:client": "cd employee-portal-client && npm start",
+    "build:start": "npm run build && npm start"
+  },
+  "keywords": ["employee", "portal", "react", "node"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }
