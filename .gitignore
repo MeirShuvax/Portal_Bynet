@@ -1,0 +1,158 @@
+# ========================================
+# Employee Portal - Root .gitignore
+# ========================================
+
+# ========================================
+# Dependencies
+# ========================================
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# ========================================
+# Environment & Configuration Files
+# ========================================
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+config.env
+server/config.env
+**/config.env
+*.env
+
+# ========================================
+# Build & Distribution
+# ========================================
+client/build/
+client/dist/
+server/dist/
+build/
+dist/
+*.tgz
+
+# ========================================
+# Uploads & User Files
+# ========================================
+server/uploads/
+client/uploads/
+uploads/
+**/uploads/
+
+# ========================================
+# Logs
+# ========================================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ========================================
+# OS Files
+# ========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ========================================
+# IDE & Editor Files
+# ========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ========================================
+# Temporary Scripts & Files
+# ========================================
+# Server temporary scripts
+server/clear-ai-sessions.js
+server/fix-all-image-paths.js
+server/fix-avi-image-path.js
+server/fix-avi-image.js
+server/fix-database.js
+server/reset-db.js
+clear-ai-sessions.js
+fix-all-image-paths.js
+fix-avi-image-path.js
+fix-avi-image.js
+fix-database.js
+reset-db.js
+
+# ========================================
+# Database
+# ========================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# ========================================
+# Testing
+# ========================================
+coverage/
+.nyc_output/
+*.lcov
+.jest/
+
+# ========================================
+# Cache
+# ========================================
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# ========================================
+# Misc
+# ========================================
+*.pid
+*.seed
+*.pid.lock
+.temp/
+tmp/
+temp/
+
+# ========================================
+# Project Specific
+# ========================================
+# Screenshots & images
+*.png
+*.jpg
+*.jpeg
+*.gif
+!**/public/**/*.png
+!**/public/**/*.jpg
+!**/public/**/*.jpeg
+!**/public/**/*.gif
+!**/src/assets/**/*.png
+!**/src/assets/**/*.jpg
+
+# Documents
+*.docx
+*.pdf
+*.fig
+*.zip
+
+# Tokens & themes
+tokens/
+*.zip
+
