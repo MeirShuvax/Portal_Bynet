@@ -1,0 +1,77 @@
+.photo-of-week-carousel {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 18px 12px 12px 12px;
+  max-width: 420px;
+  margin: 0 auto;
+  direction: rtl;
+}
+.photo-of-week-image-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.photo-of-week-image {
+  max-width: 320px;
+  max-height: 220px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  margin: 0 12px;
+  background: #f5f5f5;
+}
+.photo-of-week-arrow {
+  background: #bf2e1a;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.photo-of-week-arrow:hover {
+  background: #a02615;
+}
+.photo-of-week-caption {
+  margin-top: 10px;
+  text-align: center;
+}
+.photo-of-week-title {
+  font-weight: bold;
+  color: #1a202c;
+  font-size: 1.1rem;
+}
+.photo-of-week-desc {
+  color: #444;
+  font-size: 0.95rem;
+}
+.photo-of-week-dots {
+  margin-top: 8px;
+  text-align: center;
+}
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin: 0 3px;
+  background: #ccc;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.dot.active {
+  background: #bf2e1a;
+}
+.photo-of-week-empty {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 24px 12px;
+  text-align: center;
+  color: #888;
+} 
