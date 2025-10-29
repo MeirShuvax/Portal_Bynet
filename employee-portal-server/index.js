@@ -315,22 +315,34 @@ async function updateExistingEmployeesWithManager() {
 // 🚀 Server Start
 // =======================
 
-createDatabaseIfNotExists()
-  .then(() => sequelize.authenticate())
-  .then(() => {
+// Initialize database connection (non-blocking - server starts even if DB fails)
+async function initializeDatabase() {
+  // Check if DB credentials are provided
+  if (!process.env.DB_HOST || !process.env.DB_NAME || !process.env.DB_USER) {
+    console.log('⚠️ Database credentials not provided - skipping database setup');
+    console.log('ℹ️  Server will start without database. Add DB credentials to enable database features.');
+    return;
+  }
+
+  try {
+    await createDatabaseIfNotExists();
+    await sequelize.authenticate();
     console.log('✅ Connection to the database has been established successfully.');
-  })
-  .then(() => syncModelsSafely()) // קודם סנכרון המודלים
-  .then(() => insertInitialData()) // אחר כך הוספת יוזר אדמין
-  .then(() => insertMicrosoftUsers()) // הוספת משתמשי Microsoft
-  .then(() => insertImportantLinks()) // הוספת קישורים חשובים
-  .then(() => updateExistingEmployeesWithManager()) // עדכון עובדים קיימים עם manager_id
-  .then(() => {
+    await syncModelsSafely();
+    await insertInitialData();
+    await insertMicrosoftUsers();
+    await insertImportantLinks();
+    await updateExistingEmployeesWithManager();
     console.log('✅ Server setup completed successfully');
-  })
-  .catch(err => {
-    console.error('❌ Error during setup:', err);
-  });
+  } catch (err) {
+    console.error('❌ Error during database setup:', err.message);
+    console.log('⚠️  Server will continue without database connection');
+    console.log('ℹ️  To fix: Add DB_HOST, DB_NAME, DB_USER, DB_PASSWORD environment variables');
+  }
+}
+
+// Initialize database (non-blocking)
+initializeDatabase();
 
 
 // =======================
