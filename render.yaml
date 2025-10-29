@@ -73,8 +73,8 @@ services:
     # Region (אופציונלי)
     # region: frankfurt  # או כל region אחר
     
-    # Health Check Path (אופציונלי)
-    healthCheckPath: /
+    # Health Check Path
+    healthCheckPath: /health
 
 # אופציונלי: אם תרצה גם Static Site ללקוח בנפרד
 # (אבל כרגע לא צריך כי השרת מגיש את הלקוח)

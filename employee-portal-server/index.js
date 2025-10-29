@@ -351,6 +351,15 @@ initializeDatabase();
 // 🌐 Routes
 // =======================
 
+// Health Check endpoint for Render
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    service: 'employee-portal-server'
+  });
+});
+
 // ========================
 // ⚠️ TEMPORARY AUTH BYPASS FOR DEVELOPMENT
 // ========================
@@ -441,8 +450,10 @@ if (clientBuildPath) {
 // =======================
 // 🟢 Listen
 // =======================
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+// Listen on 0.0.0.0 to accept connections from any network interface (required for Render)
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+  console.log(`📡 Accessible at port: ${PORT}`);
 });
 
 // פונקציה להרצת מיגרציות (לשימוש עם npm run migrate)
