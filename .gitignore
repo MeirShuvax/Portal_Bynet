@@ -24,6 +24,9 @@ config.env
 server/config.env
 **/config.env
 *.env
+!render.env.example
+render.env
+!render.env.example
 
 # ========================================
 # Build & Distribution
