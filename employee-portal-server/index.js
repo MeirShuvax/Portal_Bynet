@@ -3,7 +3,9 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const http = require('http');
 const { Server } = require('socket.io');
+// Try to load from config.env if exists (local development), otherwise use environment variables (production)
 require('dotenv').config({ path: './config.env' });
+// If config.env doesn't exist, use process.env directly (production)
 const mysql = require('mysql2/promise');
 const sequelize = require('./config/database');
 const path = require('path');
