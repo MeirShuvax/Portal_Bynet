@@ -1,0 +1,86 @@
+# Render Blueprint Configuration
+# קובץ זה מגדיר אוטומטית את כל ההגדרות ל-Render
+# פשוט העלה את הקובץ ל-GitHub ו-Render יזהה אותו אוטומטית
+
+services:
+  # Web Service - השרת הראשי
+  - type: web
+    name: employee-portal-server
+    env: node
+    plan: free  # או 'starter' / 'standard' - לפי התוכנית שלך
+    
+    # תיקיית השורש
+    rootDir: employee-portal-server
+    
+    # פקודת Build
+    buildCommand: |
+      echo "📦 Installing client dependencies..."
+      cd ../employee-portal-client
+      npm install
+      echo "🏗️ Building React client..."
+      npm run build
+      echo "📦 Installing server dependencies..."
+      cd ../employee-portal-server
+      npm install
+      echo "✅ Build completed!"
+    
+    # פקודת Start
+    startCommand: node index.js
+    
+    # הגדרות סביבה
+    envVars:
+      # Port - Render קובע אוטומטית, אבל אפשר להגדיר
+      - key: PORT
+        value: 5000
+      
+      # Node Environment
+      - key: NODE_ENV
+        value: production
+      
+      # Database Configuration
+      # ⚠️ החלף בערכים האמיתיים שלך
+      - key: DB_HOST
+        sync: false  # תגדיר ידנית ב-Render Dashboard
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      
+      # Microsoft Azure AD
+      - key: MICROSOFT_CLIENT_ID
+        sync: false
+      - key: MICROSOFT_TENANT_ID
+        sync: false
+      - key: MICROSOFT_CLIENT_SECRET
+        sync: false
+      
+      # JWT Secret
+      - key: JWT_SECRET
+        sync: false  # ⚠️ חשוב לשנות ב-prod!
+      
+      # Allowed Emails
+      - key: ALLOWED_EMAILS
+        sync: false
+      
+      # OpenAI
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ASSISTANT_MAIN
+        sync: false
+    
+    # Region (אופציונלי)
+    # region: frankfurt  # או כל region אחר
+    
+    # Health Check Path (אופציונלי)
+    healthCheckPath: /
+
+# אופציונלי: אם תרצה גם Static Site ללקוח בנפרד
+# (אבל כרגע לא צריך כי השרת מגיש את הלקוח)
+# staticSites:
+#   - name: employee-portal-client
+#     buildCommand: npm install && npm run build
+#     staticPublishPath: build
+#     env: static
+
