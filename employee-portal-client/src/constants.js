@@ -6,7 +6,7 @@ export const LIGHT_GRAY = '#e2e8f0';
 export const MEDIUM_GRAY = '#cbd5e0';
 
 // Dynamic API base URL
-export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+export const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
 // Helper function to build image URL using server API
 export const getImageUrl = (imagePath) => {
