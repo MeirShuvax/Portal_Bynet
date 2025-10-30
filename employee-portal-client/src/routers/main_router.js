@@ -9,6 +9,7 @@ import CompanyTeam from '../components/CompanyTeam';
 import OrganizationalChart from '../components/OrganizationalChart';
 import ImportantLinks from '../components/ImportantLinks';
 import UpdatesPage from '../components/UpdatesPage';
+import ChatPage from '../components/ChatPage';
 
 const MainRouter = ({ user }) => (
   <Routes>
@@ -21,6 +22,7 @@ const MainRouter = ({ user }) => (
       <Route path="organizational-chart" element={<OrganizationalChart />} />
       <Route path="important-links" element={<ImportantLinks />} />
       <Route path="updates" element={<UpdatesPage />} />
+      <Route path="chat" element={<ChatPage />} />
 
       {/* כאן תוכל להוסיף ראוטים נוספים */}
     </Route>

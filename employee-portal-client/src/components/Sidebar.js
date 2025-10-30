@@ -75,9 +75,8 @@ const Sidebar = () => {
           <FaCalendarAlt /> דף הבית
         </Nav.Link>
         
-        <Nav.Link className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
+        <Nav.Link as={Link} to="/chat" className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
           <FaComments /> צ'אט
-          <span style={{fontSize: '0.7rem', background: '#bf2e1a', color: 'white', padding: '2px 6px', borderRadius: '10px', marginLeft: '8px'}}>בהרצה</span>
         </Nav.Link>
 
         <Nav.Link as={Link} to="/important-links" className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
