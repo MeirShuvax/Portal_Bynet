@@ -41,10 +41,10 @@ dist/
 # ========================================
 # Uploads & User Files
 # ========================================
-server/uploads/
-client/uploads/
-uploads/
-**/uploads/
+# server/uploads/
+# client/uploads/
+# uploads/
+# **/uploads/
 
 # ========================================
 # Logs
