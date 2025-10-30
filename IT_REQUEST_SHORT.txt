@@ -1,0 +1,17 @@
+שלום,
+
+אני צריך להוסיף Redirect URIs חדשים ל-Azure AD Application עבור הפורטל.
+
+פרטי האפליקציה:
+- Client ID: 18d62b55-f089-48a6-a467-789ba2f4d75d
+- Tenant ID: b5f3202f-73b3-40a8-a61e-596ab18836ea
+
+צריך להוסיף ב-Azure Portal → App registrations → [האפליקציה] → Authentication → Redirect URIs:
+
+1. https://employee-portal-td9r.onrender.com
+
+הסבר: הפורטל רץ כעת גם ב-Cloud (Render), בנוסף ל-localhost הקיים. Microsoft מחזיר את המשתמש לאותו URL שממנו התחילה ההתחברות, אז מספיק URL אחד.
+
+אשמח לאישור שהשינויים בוצעו.
+
+תודה!
