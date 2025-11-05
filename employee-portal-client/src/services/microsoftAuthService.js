@@ -44,10 +44,10 @@ const msalConfig = {
 // Create MSAL instance
 const msalInstance = new PublicClientApplication(msalConfig);
 
-// Login request configuration
+// Login request configuration - use 'select_account' to allow silent login
 const loginRequest = {
-  scopes: ['User.Read', 'User.ReadBasic.All', 'profile'],
-  prompt: 'login'
+  scopes: ['User.Read', 'User.ReadBasic.All', 'profile']
+  // Removed 'prompt: login' to allow silent authentication
 };
 
 class MicrosoftAuthService {
@@ -81,6 +81,24 @@ class MicrosoftAuthService {
       
       console.log('🔐 Starting Microsoft login...');
       
+      // First, try to get token silently (if user is already logged in)
+      const accounts = msalInstance.getAllAccounts();
+      if (accounts.length > 0) {
+        console.log('✅ Found existing account, attempting silent login...');
+        try {
+          const silentRequest = {
+            scopes: ['User.Read', 'User.ReadBasic.All', 'profile'],
+            account: accounts[0]
+          };
+          const silentResponse = await msalInstance.acquireTokenSilent(silentRequest);
+          console.log('✅ Silent login successful!');
+          return silentResponse;
+        } catch (silentError) {
+          console.log('⚠️ Silent login failed, will try interactive login:', silentError.message);
+        }
+      }
+      
+      // If no account or silent login failed, try interactive login
       // Try popup first, fallback to redirect if popup fails
       try {
         const response = await msalInstance.loginPopup(loginRequest);

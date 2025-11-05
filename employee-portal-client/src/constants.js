@@ -6,7 +6,24 @@ export const LIGHT_GRAY = '#e2e8f0';
 export const MEDIUM_GRAY = '#cbd5e0';
 
 // Dynamic API base URL
-export const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+// In development, use localhost. In production, use the environment variable or empty string
+const getApiBaseUrl = () => {
+  // Check if we're in development mode
+  const isDevelopment = process.env.NODE_ENV === 'development' || 
+                        process.env.REACT_APP_ENV === 'development' ||
+                        window.location.hostname === 'localhost' ||
+                        window.location.hostname === '127.0.0.1';
+  
+  // If in development and no explicit URL is set, use localhost
+  if (isDevelopment && !process.env.REACT_APP_API_URL) {
+    return 'http://localhost:5000';
+  }
+  
+  // Otherwise, use the environment variable or empty string (relative URLs)
+  return process.env.REACT_APP_API_URL || '';
+};
+
+export const API_BASE_URL = getApiBaseUrl();
 
 // Helper function to build image URL using server API
 export const getImageUrl = (imagePath) => {

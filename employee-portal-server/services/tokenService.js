@@ -18,7 +18,7 @@ class TokenService {
         iat: Math.floor(Date.now() / 1000)
       },
       process.env.JWT_SECRET,
-      { expiresIn: '30d' } // Token valid for 30 days
+      { expiresIn: '60d' } // Token valid for 60 days (2 months)
     );
   }
 
@@ -161,12 +161,12 @@ class TokenService {
         throw new Error('User not found');
       }
 
-      // Check if token expires soon (within 7 days)
+      // Check if token expires soon (within 14 days)
       const now = Math.floor(Date.now() / 1000);
       const tokenExp = decoded.exp;
       const timeUntilExpiry = tokenExp - now;
 
-      if (timeUntilExpiry < 604800) { // Less than 7 days
+      if (timeUntilExpiry < 1209600) { // Less than 14 days (2 weeks)
         // Create new token
         const newToken = this.createToken({
           id: user.id, // Database INTEGER ID

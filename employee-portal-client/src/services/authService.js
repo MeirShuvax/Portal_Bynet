@@ -24,7 +24,32 @@ class AuthService {
 
       const token = this.getStoredToken();
       if (!token) {
-        // Microsoft is connected but no local token - need to login
+        // Microsoft is connected but no local token - try to get token silently
+        console.log('No local token found, attempting silent authentication...');
+        try {
+          const accessToken = await microsoftAuthService.getAccessToken();
+          if (accessToken) {
+            // Try to authenticate with server using Microsoft token
+            const response = await fetch(`${API_BASE_URL}/api/auth/microsoft`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ accessToken })
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              this.storeToken(data.token);
+              this.storeUser(data.user);
+              console.log('✅ Silent authentication successful!');
+              return true;
+            }
+          }
+        } catch (silentError) {
+          console.log('⚠️ Silent authentication failed:', silentError.message);
+        }
+        // If silent auth failed, need to login
         return false;
       }
 
@@ -40,9 +65,35 @@ class AuthService {
       if (response.ok) {
         const data = await response.json();
         this.storeUser(data.user);
+        // Try to refresh token if it's expiring soon
+        await this.refreshToken();
         return true;
       } else {
-        // Token expired or invalid, but Microsoft is connected - need to refresh
+        // Token expired or invalid, but Microsoft is connected - try to refresh using Microsoft token
+        console.log('Token expired, attempting to refresh using Microsoft token...');
+        try {
+          const accessToken = await microsoftAuthService.getAccessToken();
+          if (accessToken) {
+            const refreshResponse = await fetch(`${API_BASE_URL}/api/auth/microsoft`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ accessToken })
+            });
+
+            if (refreshResponse.ok) {
+              const refreshData = await refreshResponse.json();
+              this.storeToken(refreshData.token);
+              this.storeUser(refreshData.user);
+              console.log('✅ Token refreshed successfully!');
+              return true;
+            }
+          }
+        } catch (refreshError) {
+          console.log('⚠️ Token refresh failed:', refreshError.message);
+        }
+        // If refresh failed, clear auth
         this.clearStoredAuth();
         return false;
       }
