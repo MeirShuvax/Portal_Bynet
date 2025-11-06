@@ -10,6 +10,7 @@ import OrganizationalChart from '../components/OrganizationalChart';
 import ImportantLinks from '../components/ImportantLinks';
 import UpdatesPage from '../components/UpdatesPage';
 import ChatPage from '../components/ChatPage';
+import ImageUploadPage from '../components/ImageUploadPage';
 
 const MainRouter = ({ user }) => (
   <Routes>
@@ -23,6 +24,7 @@ const MainRouter = ({ user }) => (
       <Route path="important-links" element={<ImportantLinks />} />
       <Route path="updates" element={<UpdatesPage />} />
       <Route path="chat" element={<ChatPage />} />
+      <Route path="upload-images" element={<ImageUploadPage />} />
 
       {/* כאן תוכל להוסיף ראוטים נוספים */}
     </Route>

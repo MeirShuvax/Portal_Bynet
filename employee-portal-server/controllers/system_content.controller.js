@@ -55,4 +55,49 @@ exports.getAllLinks = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'שגיאה בשליפת קישורים' });
   }
+};
+
+// מחיקת תוכן מערכת
+exports.deleteSystemContent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const content = await SystemContent.findByPk(id);
+    
+    if (!content) {
+      return res.status(404).json({ message: 'תוכן לא נמצא' });
+    }
+
+    // אם זה תמונה, מחק את הקובץ מהדיסק
+    if (content.type === 'image' && content.url) {
+      try {
+        const fs = require('fs');
+        const path = require('path');
+        const uploadsDir = process.env.UPLOADS_PATH || path.join(__dirname, '..', 'uploads');
+        
+        // ניקוי הנתיב - הסר /uploads/ אם יש
+        let imageFilename = content.url;
+        if (imageFilename.startsWith('/uploads/')) {
+          imageFilename = imageFilename.replace('/uploads/', '');
+        } else if (imageFilename.startsWith('/')) {
+          imageFilename = imageFilename.substring(1);
+        }
+        
+        const imagePath = path.join(uploadsDir, imageFilename);
+        
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+          console.log('🗑️ Deleted image file:', imagePath);
+        }
+      } catch (deleteError) {
+        console.log('⚠️ Could not delete image file:', deleteError.message);
+        // לא נכשל אם לא הצלחנו למחוק - נמשיך למחוק מה-DB
+      }
+    }
+
+    await content.destroy();
+    res.json({ message: 'תוכן נמחק בהצלחה' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'שגיאה במחיקת תוכן' });
+  }
 }; 

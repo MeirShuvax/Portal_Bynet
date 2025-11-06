@@ -891,18 +891,47 @@ exports.getAllBirthday = async (req, res) => {
 exports.getMe = async (req, res) => {
   try {
     // The user object is attached to the request by the authenticate middleware
-    const user = req.user;
+    // But we need to get the full user from DB to get the actual role
+    const userFromRequest = req.user;
 
-    if (!user) {
+    if (!userFromRequest) {
       return res.status(401).json({ error: 'User not authenticated' });
     }
     
-    // Return all user details except the password
-    const { password, ...userWithoutPassword } = user;
-    res.json(userWithoutPassword);
+    console.log('🔍 getMe - User ID from request:', userFromRequest.id);
+    console.log('🔍 getMe - User email from request:', userFromRequest.email);
+    
+    // Get full user from database to get actual role
+    const user = await User.findByPk(userFromRequest.id, {
+      attributes: { exclude: ['password'] }
+    });
+
+    if (!user) {
+      console.error('❌ getMe - User not found in database for ID:', userFromRequest.id);
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    console.log('✅ getMe - User found:', {
+      id: user.id,
+      email: user.email,
+      full_name: user.full_name,
+      role: user.role,
+      roleType: typeof user.role
+    });
+    
+    // Return all user details with actual role from database
+    // Convert to plain object to ensure role is included
+    const userData = user.toJSON();
+    console.log('📤 getMe - Returning user data:', {
+      id: userData.id,
+      email: userData.email,
+      role: userData.role
+    });
+    
+    res.json(userData);
 
   } catch (error) {
-    console.error('Error fetching current user:', error);
+    console.error('❌ Error fetching current user:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };

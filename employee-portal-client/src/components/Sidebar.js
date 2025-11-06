@@ -1,7 +1,7 @@
 // Sidebar.jsx
 import { Nav, Dropdown, Badge } from "react-bootstrap";
-import { FaCalendarAlt, FaUsers, FaCogs, FaSignOutAlt, FaTrophy, FaBuilding, FaBook, FaInfoCircle, FaList, FaInfo, FaLink, FaComments, FaCode, FaClipboardList, FaCalendarCheck, FaAward, FaCog, FaChevronLeft, FaPoll } from "react-icons/fa";
-import { Link } from 'react-router-dom';
+import { FaCalendarAlt, FaUsers, FaCogs, FaSignOutAlt, FaTrophy, FaBuilding, FaBook, FaInfoCircle, FaList, FaInfo, FaLink, FaComments, FaCode, FaClipboardList, FaCalendarCheck, FaAward, FaCog, FaChevronLeft, FaPoll, FaImage } from "react-icons/fa";
+import { Link, useOutletContext } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getHonorTypes } from '../services/honorsService';
 import filesService from '../services/filesService';
@@ -12,10 +12,23 @@ import logo from '../assets/bynet-logo.png';
 const UNREAD_KEY = 'chat_unread_messages';
 
 const Sidebar = () => {
+  const outletContext = useOutletContext();
+  const user = outletContext?.user || null;
   const [outstandingHonorId, setOutstandingHonorId] = useState(null);
   const [showEthicalCodeDropdown, setShowEthicalCodeDropdown] = useState(false);
   const [imageViewer, setImageViewer] = useState({ isOpen: false, url: '', filename: '' });
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // Debug: Log user role
+  useEffect(() => {
+    if (user) {
+      console.log('🔍 Sidebar - User:', user);
+      console.log('🔍 Sidebar - User role:', user.role, 'Type:', typeof user.role);
+      console.log('🔍 Sidebar - Is admin?', user.role === 'admin');
+    } else {
+      console.log('⚠️ Sidebar - No user in context');
+    }
+  }, [user]);
 
   // עדכון ספירת הודעות שלא נקראו
   useEffect(() => {
@@ -274,9 +287,9 @@ const Sidebar = () => {
           <FaInfo /> אודות
         </Nav.Link>
         
-        <Nav.Link className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
+        {/* הגדרות למנהל - כולם רואים, אבל רק מנהלים יכולים להשתמש */}
+        <Nav.Link as={Link} to="/upload-images" className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
           <FaCog /> הגדרות למנהל
-          <span style={{fontSize: '0.7rem', background: '#bf2e1a', color: 'white', padding: '2px 6px', borderRadius: '10px', marginLeft: '8px'}}>בהרצה</span>
         </Nav.Link>
 
       </Nav>

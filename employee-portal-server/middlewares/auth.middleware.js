@@ -1,5 +1,6 @@
 // middlewares/auth.middleware.js
 const jwt = require('jsonwebtoken');
+const { User } = require('../models');
 require('dotenv').config({ path: './config.env' });
 
 const authenticate = async (req, res, next) => {
@@ -24,19 +25,28 @@ const authenticate = async (req, res, next) => {
     // Verify JWT token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    // If JWT token is valid, user is authorized
-    // No need to check email list - if they have a valid token, they're allowed
+    // Get user from database to get the actual role
+    const user = await User.findOne({
+      where: { email: decoded.email },
+      attributes: ['id', 'email', 'full_name', 'role', 'profile_image']
+    });
     
-    // Set user info from token
+    if (!user) {
+      console.error('❌ User not found in database');
+      return res.status(401).json({ error: 'User not found' });
+    }
+    
+    // Set user info from database (with actual role)
     req.user = {
-      id: decoded.id,
-      email: decoded.email,
-      name: decoded.name,
+      id: user.id,
+      email: user.email,
+      name: user.full_name,
+      full_name: user.full_name,
       microsoftId: decoded.microsoftId,
-      role: 'user' // Default role for Microsoft authenticated users
+      role: user.role || 'viewer' // Use actual role from database
     };
     
-    console.log('✅ Authentication successful for user:', req.user.name, 'Email:', req.user.email);
+    console.log('✅ Authentication successful for user:', req.user.name, 'Email:', req.user.email, 'Role:', req.user.role);
 
     next();
   } catch (error) {

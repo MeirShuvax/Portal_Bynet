@@ -32,9 +32,33 @@ function App() {
       
       const isAuth = await authService.isAuthenticated();
       if (isAuth) {
-        const userData = authService.getCurrentUser();
-        setUser(userData);
-        setIsAuthenticated(true);
+        // Get user from API to get the actual role from database
+        try {
+          const { getMe } = await import('./services/apiService');
+          const userData = await getMe();
+          console.log('✅ User data from API (getMe):', userData);
+          console.log('✅ User role:', userData?.role, 'Type:', typeof userData?.role);
+          
+          // Ensure we have the user data
+          if (userData && userData.role) {
+            setUser(userData);
+            setIsAuthenticated(true);
+            // Also update stored user data
+            authService.storeUser(userData);
+          } else {
+            console.warn('⚠️ User data missing role, using stored user');
+            const storedUser = authService.getCurrentUser();
+            setUser(storedUser);
+            setIsAuthenticated(true);
+          }
+        } catch (apiError) {
+          console.error('❌ Failed to fetch user from API, using stored user:', apiError);
+          // Fallback to stored user if API fails
+          const userData = authService.getCurrentUser();
+          console.log('📦 Using stored user data:', userData);
+          setUser(userData);
+          setIsAuthenticated(true);
+        }
       }
     } catch (error) {
       console.error('Authentication check failed:', error);
@@ -43,9 +67,30 @@ function App() {
     }
   };
 
-  const handleLoginSuccess = (userData) => {
-    setUser(userData);
-    setIsAuthenticated(true);
+  const handleLoginSuccess = async (userData) => {
+    // After login, fetch fresh user data from API to get actual role
+    try {
+      const { getMe } = await import('./services/apiService');
+      const freshUserData = await getMe();
+      console.log('✅ Fresh user data after login (getMe):', freshUserData);
+      console.log('✅ Fresh user role:', freshUserData?.role, 'Type:', typeof freshUserData?.role);
+      
+      if (freshUserData && freshUserData.role) {
+        setUser(freshUserData);
+        setIsAuthenticated(true);
+        // Also update stored user data
+        authService.storeUser(freshUserData);
+      } else {
+        console.warn('⚠️ Fresh user data missing role, using provided data');
+        setUser(userData);
+        setIsAuthenticated(true);
+      }
+    } catch (apiError) {
+      console.error('❌ Failed to fetch user from API after login, using provided data:', apiError);
+      // Fallback to provided user data if API fails
+      setUser(userData);
+      setIsAuthenticated(true);
+    }
   };
 
   const handleLogout = async () => {
