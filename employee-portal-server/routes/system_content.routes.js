@@ -5,9 +5,20 @@ const path = require('path');
 const systemContentController = require('../controllers/system_content.controller');
 
 // הגדרת אחסון Multer
+// בפרודקשן: התמונות נשמרות בתיקיית uploads בשרת
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../uploads'));
+    // אפשר להשתמש במשתנה סביבה לפרודקשן, או ברירת מחדל
+    const uploadPath = process.env.UPLOADS_PATH || path.join(__dirname, '../uploads');
+    
+    // וודא שהתיקייה קיימת
+    const fs = require('fs');
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+      console.log('✅ Created uploads directory:', uploadPath);
+    }
+    
+    cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);

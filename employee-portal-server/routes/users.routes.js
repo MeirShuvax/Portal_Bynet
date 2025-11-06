@@ -6,16 +6,19 @@ const userController = require('../controllers/users.controller');
 const {authenticate, isAdmin, isSelfOrAdmin } = require('../middlewares/auth.middleware');
 
 // הגדרת Multer להעלאת תמונות פרופיל
+// בפרודקשן: התמונות נשמרות בתיקיית uploads בשרת
+// נתיב: אפשר להשתמש ב-UPLOADS_PATH או ברירת מחדל: __dirname/../uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadPath = path.join(__dirname, '../uploads');
+    // אפשר להשתמש במשתנה סביבה לפרודקשן, או ברירת מחדל
+    const uploadPath = process.env.UPLOADS_PATH || path.join(__dirname, '../uploads');
     console.log('📁 Upload destination:', uploadPath);
     
-    // וודא שהתיקייה קיימת
+    // וודא שהתיקייה קיימת (עובד גם בפרודקשן)
     const fs = require('fs');
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
-      console.log('✅ Created uploads directory');
+      console.log('✅ Created uploads directory:', uploadPath);
     }
     
     cb(null, uploadPath);

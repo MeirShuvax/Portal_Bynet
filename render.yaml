@@ -69,6 +69,26 @@ services:
         sync: false
       - key: ASSISTANT_MAIN
         sync: false
+      
+      # Uploads Directory - חשוב! הגדר את זה אחרי שיצרת Persistent Disk
+      # ⚠️ אם יצרת Persistent Disk עם Mount Path: /opt/render/uploads
+      # אז הגדר: UPLOADS_PATH=/opt/render/uploads
+      - key: UPLOADS_PATH
+        value: /opt/render/uploads  # ⚠️ רק אם יצרת Persistent Disk!
+        sync: false  # תגדיר ידנית ב-Render Dashboard
+    
+    # Persistent Disks - חשוב לשמירת תמונות!
+    # ⚠️ צריך ליצור ידנית ב-Render Dashboard:
+    # 1. לך ל-Settings → Persistent Disks
+    # 2. לחץ + Add Persistent Disk
+    # 3. Name: uploads-disk
+    # 4. Mount Path: /opt/render/uploads
+    # 5. Size: 10GB (או כמה שאתה צריך)
+    # 6. הוסף משתנה סביבה: UPLOADS_PATH=/opt/render/uploads
+    # persistentDisks:
+    #   - name: uploads-disk
+    #     mountPath: /opt/render/uploads
+    #     sizeGB: 10
     
     # Region (אופציונלי)
     # region: frankfurt  # או כל region אחר

@@ -53,7 +53,11 @@ const io = new Server(server, {
 app.set('io', io); // נותן גישה ל־io בכל ה־req
 
 // שרת קבצים סטטיים מהתיקיה uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// בפרודקשן: התמונות נגישות דרך /uploads/filename
+// נתיב: אפשר להשתמש ב-UPLOADS_PATH או ברירת מחדל: __dirname/uploads
+const uploadsPath = process.env.UPLOADS_PATH || path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadsPath));
+console.log('📁 Serving static files from:', uploadsPath);
 
 const PORT = process.env.PORT || 5000;
 

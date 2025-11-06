@@ -576,8 +576,36 @@ exports.updateUserWithImage = async (req, res) => {
     // הכנת נתוני העדכון
     const updateData = { ...req.body };
     
-    // אם יש קובץ תמונה, הוסף את הנתיב
+    // אם יש קובץ תמונה חדש, מחק את הישן לפני שמירת החדש
     if (req.file) {
+      // מחק תמונה ישנה אם קיימת
+      if (user.profile_image) {
+        try {
+          const fs = require('fs');
+          const path = require('path');
+          const uploadsDir = process.env.UPLOADS_PATH || path.join(__dirname, '..', 'uploads');
+          
+          // ניקוי הנתיב - הסר /uploads/ אם יש, והשאר רק את שם הקובץ
+          let oldImageFilename = user.profile_image;
+          if (oldImageFilename.startsWith('/uploads/')) {
+            oldImageFilename = oldImageFilename.replace('/uploads/', '');
+          } else if (oldImageFilename.startsWith('/')) {
+            oldImageFilename = oldImageFilename.substring(1);
+          }
+          
+          const oldImagePath = path.join(uploadsDir, oldImageFilename);
+          console.log('🔍 Checking for old image at:', oldImagePath);
+          
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+            console.log('🗑️ Deleted old profile image:', oldImageFilename);
+          }
+        } catch (deleteError) {
+          console.log('⚠️ Could not delete old image:', deleteError.message);
+          // לא נכשל אם לא הצלחנו למחוק - נמשיך עם התמונה החדשה
+        }
+      }
+      
       updateData.profile_image = `/${req.file.filename}`;
       console.log('✅ Image uploaded:', updateData.profile_image);
     } else {
@@ -612,6 +640,34 @@ exports.updateUserProfileImage = async (req, res) => {
     }
 
     if (req.file) {
+      // מחק תמונה ישנה אם קיימת
+      if (user.profile_image) {
+        try {
+          const fs = require('fs');
+          const path = require('path');
+          const uploadsDir = process.env.UPLOADS_PATH || path.join(__dirname, '..', 'uploads');
+          
+          // ניקוי הנתיב - הסר /uploads/ אם יש, והשאר רק את שם הקובץ
+          let oldImageFilename = user.profile_image;
+          if (oldImageFilename.startsWith('/uploads/')) {
+            oldImageFilename = oldImageFilename.replace('/uploads/', '');
+          } else if (oldImageFilename.startsWith('/')) {
+            oldImageFilename = oldImageFilename.substring(1);
+          }
+          
+          const oldImagePath = path.join(uploadsDir, oldImageFilename);
+          console.log('🔍 Checking for old image at:', oldImagePath);
+          
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+            console.log('🗑️ Deleted old profile image:', oldImageFilename);
+          }
+        } catch (deleteError) {
+          console.log('⚠️ Could not delete old image:', deleteError.message);
+          // לא נכשל אם לא הצלחנו למחוק - נמשיך עם התמונה החדשה
+        }
+      }
+      
       const profile_image = `/${req.file.filename}`;
       await user.update({ profile_image });
       

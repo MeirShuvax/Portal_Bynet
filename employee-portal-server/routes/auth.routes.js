@@ -92,20 +92,36 @@ router.post('/microsoft', async (req, res) => {
         const fs = require('fs');
         const path = require('path');
         
+        // בפרודקשן: אפשר להשתמש ב-UPLOADS_PATH או ברירת מחדל
+        const uploadsDir = process.env.UPLOADS_PATH || path.join(__dirname, '..', 'uploads');
+        
         // Check if user exists and get current profile image
         const userEmail = userInfo.mail || userInfo.userPrincipalName;
         const existingUser = await TokenService.checkUserExists(userEmail);
         
         // Delete old profile image if exists
         if (existingUser && existingUser.profile_image) {
-          const oldImagePath = path.join(__dirname, '..', existingUser.profile_image);
           try {
+            // ניקוי הנתיב - הסר /uploads/ אם יש, והשאר רק את שם הקובץ
+            let oldImageFilename = existingUser.profile_image;
+            if (oldImageFilename.startsWith('/uploads/')) {
+              oldImageFilename = oldImageFilename.replace('/uploads/', '');
+            } else if (oldImageFilename.startsWith('/')) {
+              oldImageFilename = oldImageFilename.substring(1); // הסר את ה-/ הראשון
+            }
+            
+            const oldImagePath = path.join(uploadsDir, oldImageFilename);
+            console.log('🔍 Checking for old image at:', oldImagePath);
+            
             if (fs.existsSync(oldImagePath)) {
               fs.unlinkSync(oldImagePath);
-              console.log('🗑️ Deleted old profile image:', existingUser.profile_image);
+              console.log('🗑️ Deleted old profile image:', oldImageFilename);
+            } else {
+              console.log('ℹ️ Old image not found (may have been deleted already):', oldImagePath);
             }
           } catch (deleteError) {
             console.log('⚠️ Could not delete old image:', deleteError.message);
+            // לא נכשל אם לא הצלחנו למחוק - נמשיך עם התמונה החדשה
           }
         }
         
@@ -113,12 +129,12 @@ router.post('/microsoft', async (req, res) => {
         const timestamp = Date.now();
         const randomId = Math.floor(Math.random() * 1000000000);
         const filename = `profile-${timestamp}-${randomId}-${userInfo.displayName || 'user'}.jpg`;
-        const filepath = path.join(__dirname, '..', 'uploads', filename);
+        const filepath = path.join(uploadsDir, filename);
         
         // Ensure uploads directory exists
-        const uploadsDir = path.join(__dirname, '..', 'uploads');
         if (!fs.existsSync(uploadsDir)) {
           fs.mkdirSync(uploadsDir, { recursive: true });
+          console.log('✅ Created uploads directory:', uploadsDir);
         }
         
         // Save image file

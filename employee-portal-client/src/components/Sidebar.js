@@ -1,5 +1,5 @@
 // Sidebar.jsx
-import { Nav, Dropdown } from "react-bootstrap";
+import { Nav, Dropdown, Badge } from "react-bootstrap";
 import { FaCalendarAlt, FaUsers, FaCogs, FaSignOutAlt, FaTrophy, FaBuilding, FaBook, FaInfoCircle, FaList, FaInfo, FaLink, FaComments, FaCode, FaClipboardList, FaCalendarCheck, FaAward, FaCog, FaChevronLeft, FaPoll } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -9,10 +9,37 @@ import toastService from '../services/toastService';
 import ImageViewer from './ImageViewer';
 import logo from '../assets/bynet-logo.png';
 
+const UNREAD_KEY = 'chat_unread_messages';
+
 const Sidebar = () => {
   const [outstandingHonorId, setOutstandingHonorId] = useState(null);
   const [showEthicalCodeDropdown, setShowEthicalCodeDropdown] = useState(false);
   const [imageViewer, setImageViewer] = useState({ isOpen: false, url: '', filename: '' });
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // עדכון ספירת הודעות שלא נקראו
+  useEffect(() => {
+    const updateUnreadCount = () => {
+      const count = parseInt(localStorage.getItem(UNREAD_KEY) || '0', 10);
+      setUnreadCount(count);
+    };
+
+    // עדכון ראשוני
+    updateUnreadCount();
+
+    // עדכון כל 5 שניות
+    const interval = setInterval(updateUnreadCount, 5000);
+
+    // עדכון כשהחלון מקבל פוקוס
+    window.addEventListener('focus', updateUnreadCount);
+    window.addEventListener('storage', updateUnreadCount);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', updateUnreadCount);
+      window.removeEventListener('storage', updateUnreadCount);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchHonorTypes = async () => {
@@ -75,8 +102,25 @@ const Sidebar = () => {
           <FaCalendarAlt /> דף הבית
         </Nav.Link>
         
-        <Nav.Link as={Link} to="/chat" className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
+        <Nav.Link as={Link} to="/chat" className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%', position: 'relative'}}>
           <FaComments /> צ'אט
+          {unreadCount > 0 && (
+            <Badge 
+              bg="danger" 
+              style={{
+                position: 'absolute',
+                right: '8px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                fontSize: '0.7rem',
+                padding: '2px 6px',
+                borderRadius: '10px',
+                animation: 'pulse 2s infinite'
+              }}
+            >
+              {unreadCount}
+            </Badge>
+          )}
         </Nav.Link>
 
         <Nav.Link as={Link} to="/important-links" className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
