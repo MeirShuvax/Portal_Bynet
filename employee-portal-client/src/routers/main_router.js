@@ -11,6 +11,9 @@ import ImportantLinks from '../components/ImportantLinks';
 import UpdatesPage from '../components/UpdatesPage';
 import ChatPage from '../components/ChatPage';
 import ImageUploadPage from '../components/ImageUploadPage';
+import AdminSettingsPage from '../components/AdminSettingsPage';
+import AdminUsersPage from '../components/AdminUsersPage';
+import AdminLinksPage from '../components/AdminLinksPage';
 
 const MainRouter = ({ user }) => (
   <Routes>
@@ -24,7 +27,10 @@ const MainRouter = ({ user }) => (
       <Route path="important-links" element={<ImportantLinks />} />
       <Route path="updates" element={<UpdatesPage />} />
       <Route path="chat" element={<ChatPage />} />
+      <Route path="admin" element={<AdminSettingsPage />} />
       <Route path="upload-images" element={<ImageUploadPage />} />
+      <Route path="admin/users" element={<AdminUsersPage />} />
+      <Route path="admin/links" element={<AdminLinksPage />} />
 
       {/* כאן תוכל להוסיף ראוטים נוספים */}
     </Route>

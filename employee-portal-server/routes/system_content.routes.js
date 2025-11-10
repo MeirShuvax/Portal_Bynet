@@ -38,6 +38,11 @@ router.get('/images', systemContentController.getAllImages);
 // שליפת כל הקישורים בלבד - כולם יכולים לראות
 router.get('/links', systemContentController.getAllLinks);
 
+// יצירה/עדכון/מחיקת קישורים - למנהלים בלבד
+router.post('/links', authenticate, isAdmin, systemContentController.createLink);
+router.put('/links/:id', authenticate, isAdmin, systemContentController.updateLink);
+router.delete('/links/:id', authenticate, isAdmin, systemContentController.deleteLink);
+
 // מחיקת תוכן מערכת - רק למנהלים
 router.delete('/:id', authenticate, isAdmin, systemContentController.deleteSystemContent);
 

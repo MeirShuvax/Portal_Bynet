@@ -13,6 +13,101 @@ export const fetchUsers = async () => {
   }
 };
 
+export const getAllUsers = async () => {
+  console.log('🔍 getAllUsers called');
+  try {
+    const result = await apiCall('/users');
+    console.log('✅ getAllUsers result:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ getAllUsers error:', error);
+    throw error;
+  }
+};
+
+const buildUserFormData = (userData) => {
+  const fd = new FormData();
+  Object.entries(userData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      fd.append(key, value);
+    }
+  });
+  return fd;
+};
+
+const authHeaders = () => {
+  const token = localStorage.getItem('authToken');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+export const createUser = async (userData) => {
+  console.log('🔍 createUser called', userData);
+  const formData = buildUserFormData(userData);
+
+  const response = await fetch(`${API_BASE_URL}/api/users`, {
+    method: 'POST',
+    headers: {
+      ...authHeaders()
+    },
+    body: formData
+  });
+
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    console.error('❌ createUser error:', data);
+    throw new Error(data?.error || data?.message || 'Failed to create user');
+  }
+
+  console.log('✅ createUser result:', data);
+  return data;
+};
+
+export const updateUser = async (userId, userData) => {
+  console.log('🔍 updateUser called for user:', userId, userData);
+  const payload = { ...userData };
+  if (!payload.password) {
+    delete payload.password;
+  }
+  const formData = buildUserFormData(payload);
+
+  const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
+    method: 'PUT',
+    headers: {
+      ...authHeaders()
+    },
+    body: formData
+  });
+
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    console.error('❌ updateUser error:', data);
+    throw new Error(data?.error || data?.message || 'Failed to update user');
+  }
+
+  console.log('✅ updateUser result:', data);
+  return data;
+};
+
+export const deleteUser = async (userId) => {
+  console.log('🔍 deleteUser called for user:', userId);
+
+  const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
+    method: 'DELETE',
+    headers: {
+      ...authHeaders()
+    }
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+    console.error('❌ deleteUser error:', data);
+    throw new Error(data?.error || data?.message || 'Failed to delete user');
+  }
+
+  console.log('✅ deleteUser success');
+  return true;
+};
+
 // יצירת משתמש חדש עם תמונה
 export const createUserWithImage = async (userData, imageFile) => {
   console.log('🔍 createUserWithImage called');

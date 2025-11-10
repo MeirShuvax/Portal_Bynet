@@ -3,21 +3,42 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/custom.css";
 import "./App.css";
-import { Container, Row, Col, Button } from "react-bootstrap";
-import Sidebar from "./components/Sidebar";
 import MainRouter from './routers/main_router';
 import LoginPage from './components/LoginPage';
 import ToastContainer from './components/ToastContainer';
+import PortalIntroModal from './components/PortalIntroModal';
 import authService from './services/authService';
+import bynetLogo from './assets/bynet-logo.png';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [skipAuth, setSkipAuth] = useState(false); // Temporary bypass
+  const [showPortalIntro, setShowPortalIntro] = useState(false);
 
   useEffect(() => {
     checkAuthentication();
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const hasSeenIntro = sessionStorage.getItem('portal_intro_shown');
+      if (!hasSeenIntro) {
+        setShowPortalIntro(true);
+      }
+    }
+  }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    document.title = 'פורטל העובדים | בינת';
+    let favicon = document.querySelector("link[rel*='icon']");
+    if (!favicon) {
+      favicon = document.createElement('link');
+      favicon.setAttribute('rel', 'icon');
+      document.head.appendChild(favicon);
+    }
+    favicon.setAttribute('type', 'image/png');
+    favicon.setAttribute('href', bynetLogo);
   }, []);
 
   const checkAuthentication = async () => {
@@ -80,16 +101,22 @@ function App() {
         setIsAuthenticated(true);
         // Also update stored user data
         authService.storeUser(freshUserData);
+        sessionStorage.removeItem('portal_intro_shown');
+        setShowPortalIntro(true);
       } else {
         console.warn('⚠️ Fresh user data missing role, using provided data');
         setUser(userData);
         setIsAuthenticated(true);
+        sessionStorage.removeItem('portal_intro_shown');
+        setShowPortalIntro(true);
       }
     } catch (apiError) {
       console.error('❌ Failed to fetch user from API after login, using provided data:', apiError);
       // Fallback to provided user data if API fails
       setUser(userData);
       setIsAuthenticated(true);
+      sessionStorage.removeItem('portal_intro_shown');
+      setShowPortalIntro(true);
     }
   };
 
@@ -98,25 +125,17 @@ function App() {
       await authService.logout();
       setUser(null);
       setIsAuthenticated(false);
+      sessionStorage.removeItem('portal_intro_shown');
+      setShowPortalIntro(false);
     } catch (error) {
       console.error('Logout failed:', error);
       // Force logout even if Microsoft logout fails
       authService.clearStoredAuth();
       setUser(null);
       setIsAuthenticated(false);
+      sessionStorage.removeItem('portal_intro_shown');
+      setShowPortalIntro(false);
     }
-  };
-
-  // Temporary bypass function for testing
-  const handleSkipAuth = () => {
-    setSkipAuth(true);
-    setIsAuthenticated(true);
-    setUser({
-      id: 1,
-      email: 'test@bynet.co.il',
-      name: 'Test User',
-      role: 'admin'
-    });
   };
 
   if (isLoading) {
@@ -153,30 +172,9 @@ function App() {
     );
   }
 
-  if (!isAuthenticated && !skipAuth) {
+  if (!isAuthenticated) {
     return (
-      <>
-        <LoginPage onLoginSuccess={handleLoginSuccess} />
-        {/* Temporary bypass button - REMOVE IN PRODUCTION */}
-        <div style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          zIndex: 9999
-        }}>
-          <Button 
-            variant="outline-danger"
-            size="sm"
-            onClick={handleSkipAuth}
-            style={{
-              fontSize: '0.75rem',
-              padding: '5px 10px'
-            }}
-          >
-            ⚠️ Skip Auth (Dev Only)
-          </Button>
-        </div>
-      </>
+      <LoginPage onLoginSuccess={handleLoginSuccess} />
     );
   }
 
@@ -184,6 +182,13 @@ function App() {
     <Router>
       <MainRouter user={user} />
       <ToastContainer />
+      <PortalIntroModal
+        show={showPortalIntro}
+        onClose={() => {
+          sessionStorage.setItem('portal_intro_shown', 'true');
+          setShowPortalIntro(false);
+        }}
+      />
     </Router>
   );
 }

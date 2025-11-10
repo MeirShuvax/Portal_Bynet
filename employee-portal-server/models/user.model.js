@@ -74,7 +74,7 @@ module.exports = (sequelize, DataTypes) => {
           }
         }
       }
-    }
+    } 
   });
 
   // הוספת מתודת השוואת סיסמאות

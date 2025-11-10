@@ -38,6 +38,7 @@ const chatRoutes = require('./routes/chat.routes');
 const aiRoutes = require('./routes/ai.routes'); // החזרתי למצב יציב
 const updatesRoutes = require('./routes/updates.routes');
 const systemContentRoutes = require('./routes/system_content.routes');
+const importantLinksRoutes = require('./routes/important_links.routes');
 const filesRoutes = require('./routes/files.routes');
 
 const { authenticate } = require('./middlewares/auth.middleware');
@@ -394,6 +395,7 @@ app.use('/api/chat', USE_AUTH ? authenticate : bypassAuth, chatRoutes);
 app.use('/api/ai', USE_AUTH ? authenticate : bypassAuth, aiRoutes);
 app.use('/api/updates', USE_AUTH ? authenticate : bypassAuth, updatesRoutes);
 app.use('/api/system-contents', USE_AUTH ? authenticate : bypassAuth, systemContentRoutes);
+app.use('/api/important-links', USE_AUTH ? authenticate : bypassAuth, importantLinksRoutes);
 app.use('/api/files', USE_AUTH ? authenticate : bypassAuth, filesRoutes);
 
 

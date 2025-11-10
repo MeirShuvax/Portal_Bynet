@@ -57,6 +57,60 @@ exports.getAllLinks = async (req, res) => {
   }
 };
 
+// יצירת קישור חדש (ללא קובץ)
+exports.createLink = async (req, res) => {
+  try {
+    const { title, url, description } = req.body;
+
+    if (!title || !url) {
+      return res.status(400).json({ message: 'חובה לספק כותרת ו-URL' });
+    }
+
+    const link = await SystemContent.create({
+      type: 'link',
+      title,
+      url,
+      description
+    });
+
+    res.status(201).json(link);
+  } catch (err) {
+    console.error('❌ createLink error:', err);
+    res.status(500).json({ message: 'שגיאה ביצירת קישור' });
+  }
+};
+
+// עדכון קישור קיים
+exports.updateLink = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, url, description } = req.body;
+
+    const link = await SystemContent.findOne({
+      where: { id, type: 'link' }
+    });
+
+    if (!link) {
+      return res.status(404).json({ message: 'קישור לא נמצא' });
+    }
+
+    if (!title || !url) {
+      return res.status(400).json({ message: 'חובה לספק כותרת ו-URL' });
+    }
+
+    await link.update({
+      title,
+      url,
+      description
+    });
+
+    res.json(link);
+  } catch (err) {
+    console.error('❌ updateLink error:', err);
+    res.status(500).json({ message: 'שגיאה בעדכון קישור' });
+  }
+};
+
 // מחיקת תוכן מערכת
 exports.deleteSystemContent = async (req, res) => {
   try {
@@ -101,3 +155,23 @@ exports.deleteSystemContent = async (req, res) => {
     res.status(500).json({ message: 'שגיאה במחיקת תוכן' });
   }
 }; 
+
+// מחיקת קישור
+exports.deleteLink = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const link = await SystemContent.findOne({
+      where: { id, type: 'link' }
+    });
+
+    if (!link) {
+      return res.status(404).json({ message: 'קישור לא נמצא' });
+    }
+
+    await link.destroy();
+    res.json({ message: 'קישור נמחק בהצלחה' });
+  } catch (err) {
+    console.error('❌ deleteLink error:', err);
+    res.status(500).json({ message: 'שגיאה במחיקת קישור' });
+  }
+};

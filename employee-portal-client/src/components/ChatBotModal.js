@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Modal, Button, Form, Spinner } from 'react-bootstrap';
-import { FaPaperPlane } from 'react-icons/fa';
+import { FaPaperPlane, FaTimes } from 'react-icons/fa';
 import { sendBotMessage } from '../services/Bot_AI';
 import { PRIMARY_RED } from '../constants';
 
@@ -59,16 +59,44 @@ export default function ChatBotModal({ show, onHide }) {
 
   return (
     <Modal
-        show={show}
-        onHide={onHide}
-        centered
-        dir="rtl"
-        contentClassName="p-0"
-        style={{ zIndex: 2000 }}
+      show={show}
+      onHide={onHide}
+      centered
+      dir="rtl"
+      contentClassName="p-0"
+      style={{ zIndex: 2000 }}
+    >
+      <Modal.Header
+        className="justify-content-between"
+        style={{
+          background: PRIMARY_RED,
+          color: 'white',
+          borderBottom: 0,
+          display: 'flex',
+          alignItems: 'center'
+        }}
       >
-        <Modal.Header closeButton className="justify-content-between" style={{ background: PRIMARY_RED, color: 'white', borderBottom: 0 }}>
-          <Modal.Title style={{ fontWeight: 700, fontSize: '1.2rem' }}>צ'אט עם הבינה</Modal.Title>
-        </Modal.Header>
+        <Modal.Title style={{ fontWeight: 700, fontSize: '1.2rem' }}>צ'אט עם הבינה</Modal.Title>
+        <button
+          type="button"
+          onClick={onHide}
+          aria-label="סגור צ'אט עם הבינה"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: '#fff',
+            fontSize: '1.4rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 0,
+            margin: 0,
+            lineHeight: 1
+          }}
+        >
+          <FaTimes />
+        </button>
+      </Modal.Header>
         <Modal.Body style={{ background: '#f8f9fa', minHeight: 320, maxHeight: 400, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           {messages.map((msg, idx) => (
             <div

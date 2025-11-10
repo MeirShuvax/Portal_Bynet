@@ -11,7 +11,7 @@ import logo from '../assets/bynet-logo.png';
 
 const UNREAD_KEY = 'chat_unread_messages';
 
-const Sidebar = () => {
+const Sidebar = ({ onNavigate = () => {} }) => {
   const outletContext = useOutletContext();
   const user = outletContext?.user || null;
   const [outstandingHonorId, setOutstandingHonorId] = useState(null);
@@ -93,7 +93,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className="sidebar d-none d-md-flex flex-column text-white p-4"
+      className="sidebar d-flex flex-column text-white p-4"
       style={{
         backgroundColor: "#1a202c",
         width: "260px",
@@ -111,15 +111,26 @@ const Sidebar = () => {
         <img src={logo} alt="Logo" style={{ maxWidth: "120px" }} />
       </div>
       <Nav className="flex-column gap-1 text-start">
-        <Nav.Link as={Link} to="/" className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
+        <Nav.Link
+          as={Link}
+          to="/"
+          onClick={onNavigate}
+          className="text-white d-flex justify-content-start align-items-center gap-2 py-2"
+          style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}
+        >
           <FaCalendarAlt /> דף הבית
         </Nav.Link>
-        
-        <Nav.Link as={Link} to="/chat" className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%', position: 'relative'}}>
+
+        <Nav.Link
+          as={Link}
+          to="/chat"
+          onClick={onNavigate}
+          className="text-white d-flex justify-content-start align-items-center gap-2 py-2"
+          style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%', position: 'relative' }}
+        >
           <FaComments /> צ'אט
           {unreadCount > 0 && (
-            <Badge 
-              bg="danger" 
+            <Badge
               style={{
                 position: 'absolute',
                 right: '8px',
@@ -128,7 +139,9 @@ const Sidebar = () => {
                 fontSize: '0.7rem',
                 padding: '2px 6px',
                 borderRadius: '10px',
-                animation: 'pulse 2s infinite'
+                animation: 'pulse 2s infinite',
+                backgroundColor: '#dc3545',
+                color: '#fff'
               }}
             >
               {unreadCount}
@@ -136,28 +149,38 @@ const Sidebar = () => {
           )}
         </Nav.Link>
 
-        <Nav.Link as={Link} to="/important-links" className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
+        <Nav.Link
+          as={Link}
+          to="/important-links"
+          onClick={onNavigate}
+          className="text-white d-flex justify-content-start align-items-center gap-2 py-2"
+          style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}
+        >
           <FaLink /> קישורים חשובים
         </Nav.Link>
-        
-        <Nav.Link 
-          className="text-white d-flex justify-content-start align-items-center gap-2 py-2" 
-          style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}
-          onClick={() => window.open('https://m365.cloud.microsoft/search/people?auth=2&tenantId=b5f3202f-73b3-40a8-a61e-596ab18836ea', '_blank', 'noopener,noreferrer')}
+
+        <Nav.Link
+          className="text-white d-flex justify-content-start align-items-center gap-2 py-2"
+          style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}
+          onClick={() => {
+            onNavigate();
+            window.open(
+              'https://m365.cloud.microsoft/search/people?auth=2&tenantId=b5f3202f-73b3-40a8-a61e-596ab18836ea',
+              '_blank',
+              'noopener,noreferrer'
+            );
+          }}
         >
           <FaUsers /> אנשי קשר Microsoft
         </Nav.Link>
-        
-        <div 
+
+        <div
           style={{ position: 'relative' }}
           onMouseEnter={() => setShowEthicalCodeDropdown(true)}
           onMouseLeave={(e) => {
-            // רק אם עוזבים את כל האזור (לא רק עוברים לתת-רשימה)
             try {
-              if (e.relatedTarget && 
-                  e.relatedTarget instanceof Node && 
-                  e.currentTarget.contains(e.relatedTarget)) {
-                return; // עדיין בתוך האזור
+              if (e.relatedTarget && e.relatedTarget instanceof Node && e.currentTarget.contains(e.relatedTarget)) {
+                return;
               }
             } catch (error) {
               console.log('Mouse leave error (ignoring):', error);
@@ -165,11 +188,11 @@ const Sidebar = () => {
             setShowEthicalCodeDropdown(false);
           }}
         >
-          <Nav.Link 
-            className="text-white d-flex justify-content-start align-items-center gap-2 py-2" 
+          <Nav.Link
+            className="text-white d-flex justify-content-start align-items-center gap-2 py-2"
             style={{
-              fontSize: '1rem', 
-              minHeight: '32px', 
+              fontSize: '1rem',
+              minHeight: '32px',
               textAlign: 'left',
               cursor: 'pointer',
               paddingRight: '8px',
@@ -178,12 +201,11 @@ const Sidebar = () => {
             onClick={() => setShowEthicalCodeDropdown(!showEthicalCodeDropdown)}
           >
             <FaInfoCircle /> מידע לעובד
-            {/* <span style={{fontSize: '0.7rem', background: '#bf2e1a', color: 'white', padding: '2px 6px', borderRadius: '10px', marginLeft: '8px'}}>בהרצה</span> */}
-            <FaChevronLeft style={{fontSize: '0.7rem', marginLeft: 'auto'}} />
+            <FaChevronLeft style={{ fontSize: '0.7rem', marginLeft: 'auto' }} />
           </Nav.Link>
-          
+
           {showEthicalCodeDropdown && (
-            <div 
+            <div
               style={{
                 backgroundColor: '#2d3748',
                 border: '1px solid #4a5568',
@@ -212,10 +234,10 @@ const Sidebar = () => {
                   cursor: 'pointer',
                   display: 'block'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#4a5568'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => (e.target.style.backgroundColor = '#4a5568')}
+                onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
               >
-                <FaCode style={{marginLeft: '8px'}} /> קוד האתי
+                <FaCode style={{ marginLeft: '8px' }} /> קוד האתי
               </button>
               <button
                 onClick={() => handleFileOpen('Company_rules.png', 'image')}
@@ -230,10 +252,10 @@ const Sidebar = () => {
                   cursor: 'pointer',
                   display: 'block'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#4a5568'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => (e.target.style.backgroundColor = '#4a5568')}
+                onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
               >
-                <FaInfoCircle style={{marginLeft: '8px'}} /> כללי החברה
+                <FaInfoCircle style={{ marginLeft: '8px' }} /> כללי החברה
               </button>
               <button
                 onClick={() => handleFileOpen('Safety_board.pdf', 'pdf')}
@@ -248,50 +270,63 @@ const Sidebar = () => {
                   cursor: 'pointer',
                   display: 'block'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#4a5568'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => (e.target.style.backgroundColor = '#4a5568')}
+                onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
               >
-                <FaCalendarCheck style={{marginLeft: '8px'}} /> לוח בטיחות
+                <FaCalendarCheck style={{ marginLeft: '8px' }} /> לוח בטיחות
               </button>
             </div>
           )}
         </div>
-        
-        
-        <Nav.Link className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
-        <FaCalendarAlt />  לוח חופשות
-          <span style={{fontSize: '0.7rem', background: '#bf2e1a', color: 'white', padding: '2px 6px', borderRadius: '10px', marginLeft: '8px'}}>בהרצה</span>
+
+        <Nav.Link
+          className="text-white d-flex justify-content-start align-items-center gap-2 py-2"
+          style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}
+          onClick={onNavigate}
+        >
+          <FaCalendarAlt />  לוח חופשות
+          <span
+            style={{
+              fontSize: '0.7rem',
+              background: '#bf2e1a',
+              color: 'white',
+              padding: '2px 6px',
+              borderRadius: '10px',
+              marginLeft: '8px'
+            }}
+          >
+            בהרצה
+          </span>
         </Nav.Link>
 
         {outstandingHonorId ? (
-          <Nav.Link as={Link} to={`/honors/${outstandingHonorId}`} className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
+          <Nav.Link
+            as={Link}
+            to={`/honors/${outstandingHonorId}`}
+            onClick={onNavigate}
+            className="text-white d-flex justify-content-start align-items-center gap-2 py-2"
+            style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}
+          >
             <FaAward /> מצטיינים
           </Nav.Link>
         ) : (
-          <Nav.Link className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
+          <Nav.Link className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}>
             <FaAward /> מצטיינים
-            <span style={{fontSize: '0.7rem', background: '#bf2e1a', color: 'white', padding: '2px 6px', borderRadius: '10px', marginLeft: '8px'}}>בהרצה</span>
+            <span style={{ fontSize: '0.7rem', background: '#bf2e1a', color: 'white', padding: '2px 6px', borderRadius: '10px', marginLeft: '8px' }}>בהרצה</span>
           </Nav.Link>
         )}
-        
-        <Nav.Link as={Link} to="/organizational-chart" className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
+
+        <Nav.Link as={Link} to="/organizational-chart" onClick={onNavigate} className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}>
           <FaBuilding /> פוסטים חברה
         </Nav.Link>
 
-        {/* <Nav.Link className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
-          <FaPoll /> סקרים
-          <span style={{fontSize: '0.7rem', background: '#bf2e1a', color: 'white', padding: '2px 6px', borderRadius: '10px', marginLeft: '8px'}}>בהרצה</span>
-        </Nav.Link> */}
-
-        <Nav.Link as={Link} to="/about" className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
+        <Nav.Link as={Link} to="/about" onClick={onNavigate} className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}>
           <FaInfo /> אודות
         </Nav.Link>
-        
-        {/* הגדרות למנהל - כולם רואים, אבל רק מנהלים יכולים להשתמש */}
-        <Nav.Link as={Link} to="/upload-images" className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%'}}>
+
+        <Nav.Link as={Link} to="/admin" onClick={onNavigate} className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}>
           <FaCog /> הגדרות למנהל
         </Nav.Link>
-
       </Nav>
 
       {/* Image Viewer */}

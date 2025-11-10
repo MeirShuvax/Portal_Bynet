@@ -40,8 +40,33 @@ export default function MainLayout({ user }) {
         </div>
       )}
       {showSidebar && (
-        <div className="d-md-none" style={{ width: '100%', backgroundColor: '#1a202c', zIndex: 999, position: 'absolute', top: 0, right: 0, height: '100vh' }}>
-          <Sidebar />
+        <div
+          className="d-md-none"
+          style={{
+            position: 'fixed',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            zIndex: 999,
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            backdropFilter: 'blur(1px)'
+          }}
+          onClick={() => setShowSidebar(false)}
+        >
+          <div
+            style={{
+              width: '260px',
+              height: '100%',
+              backgroundColor: '#1a202c',
+              overflowY: 'auto'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Sidebar onNavigate={() => setShowSidebar(false)} />
+          </div>
         </div>
       )}
 
