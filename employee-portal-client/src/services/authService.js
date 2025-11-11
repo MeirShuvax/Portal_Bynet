@@ -17,15 +17,17 @@ class AuthService {
       // First check if Microsoft account is connected
       const isMicrosoftConnected = await microsoftAuthService.isAuthenticated();
       if (!isMicrosoftConnected) {
-        console.log('Microsoft account not connected, clearing local auth');
-        this.clearStoredAuth();
-        return false;
+        console.log('Microsoft account not connected; will attempt to continue with stored credentials if available.');
       }
 
       const token = this.getStoredToken();
       if (!token) {
         // Microsoft is connected but no local token - try to get token silently
         console.log('No local token found, attempting silent authentication...');
+        if (!isMicrosoftConnected) {
+          console.log('Unable to attempt silent authentication because Microsoft session is missing.');
+          return false;
+        }
         try {
           const accessToken = await microsoftAuthService.getAccessToken();
           if (accessToken) {

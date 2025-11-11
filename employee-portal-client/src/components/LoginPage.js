@@ -116,7 +116,7 @@ const LoginPage = ({ onLoginSuccess }) => {
             fontWeight: 'bold',
             letterSpacing: '0.5px'
           }}>
-            פורטל עובדים
+            פורטל החברה
           </h1>
           
           <h2 style={{

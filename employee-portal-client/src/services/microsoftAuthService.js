@@ -69,6 +69,15 @@ class MicrosoftAuthService {
         console.log('✅ Redirect response handled:', response);
         msalInstance.setActiveAccount(response.account);
       }
+
+      const accounts = msalInstance.getAllAccounts();
+      if (accounts.length > 0) {
+        const active = msalInstance.getActiveAccount();
+        if (!active) {
+          msalInstance.setActiveAccount(accounts[0]);
+          console.log('👤 Active Microsoft account restored from cache:', accounts[0].username);
+        }
+      }
     } catch (error) {
       console.error('❌ MSAL initialization failed:', error);
       throw error;
@@ -171,11 +180,70 @@ class MicrosoftAuthService {
     try {
       await this.initialize();
       
-      const accounts = msalInstance.getAllAccounts();
+      let accounts = msalInstance.getAllAccounts();
+      if (accounts.length === 0) {
+        const restored = await this.trySilentReauthentication();
+        if (restored) {
+          accounts = msalInstance.getAllAccounts();
+        }
+      }
+
       return accounts.length > 0;
     } catch (error) {
       console.error('❌ Authentication check failed:', error);
       return false;
+    }
+  }
+
+  async trySilentReauthentication() {
+    try {
+      await this.initialize();
+
+      const existingAccounts = msalInstance.getAllAccounts();
+      if (existingAccounts.length > 0) {
+        if (!msalInstance.getActiveAccount()) {
+          msalInstance.setActiveAccount(existingAccounts[0]);
+        }
+        return true;
+      }
+
+      const loginHint = this.getLoginHintFromStorage();
+      if (!loginHint) {
+        return false;
+      }
+
+      const silentResponse = await msalInstance.ssoSilent({
+        loginHint,
+        scopes: loginRequest.scopes
+      });
+
+      if (silentResponse?.account) {
+        msalInstance.setActiveAccount(silentResponse.account);
+        console.log('✅ Silent SSO restored Microsoft session for', loginHint);
+        return true;
+      }
+    } catch (error) {
+      console.warn('⚠️ Silent reauthentication failed:', error.message || error);
+    }
+
+    return false;
+  }
+
+  getLoginHintFromStorage() {
+    try {
+      const storedUser =
+        localStorage.getItem('userData') ||
+        localStorage.getItem('user');
+
+      if (!storedUser) {
+        return null;
+      }
+
+      const parsed = JSON.parse(storedUser);
+      return parsed?.email || parsed?.userPrincipalName || parsed?.username || null;
+    } catch (error) {
+      console.warn('⚠️ Failed to extract login hint from storage:', error);
+      return null;
     }
   }
 

@@ -6,6 +6,7 @@ import About from '../components/AboutPage';
 import SearchBox from '../components/SearchBox';
 import HonorCarouselPage from '../components/HonorCarouselPage';
 import CompanyTeam from '../components/CompanyTeam';
+import CompanyPostsPage from '../components/CompanyPostsPage';
 import OrganizationalChart from '../components/OrganizationalChart';
 import ImportantLinks from '../components/ImportantLinks';
 import UpdatesPage from '../components/UpdatesPage';
@@ -23,6 +24,7 @@ const MainRouter = ({ user }) => (
       <Route path="m" element={<SearchBox />} />
       <Route path="honors/:typeId" element={<HonorCarouselPage />} />
       <Route path="company-team" element={<CompanyTeam />} />
+      <Route path="company-posts" element={<CompanyPostsPage />} />
       <Route path="organizational-chart" element={<OrganizationalChart />} />
       <Route path="important-links" element={<ImportantLinks />} />
       <Route path="updates" element={<UpdatesPage />} />

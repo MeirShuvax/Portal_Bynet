@@ -142,7 +142,7 @@ const ImageUploadPage = () => {
                 <FaLock size={48} className="mb-3" style={{ color: PRIMARY_RED }} />
                 <h3 style={{ color: PRIMARY_RED }}>אין הרשאות מנהל</h3>
                 <p className="text-muted mb-3">
-                  דף זה זמין רק למנהלים. אם אתה מנהל ואתה רואה הודעה זו, אנא פנה למנהל המערכת.
+                  דף זה זמין רק למנהלי מערכת הפורטל. אם אתה סבור שיש לך הרשאות כאלה, פנה למנהל מערכת הפורטל (לא למנהלי החברה).
                 </p>
                 <p className="text-muted small mb-4">
                   אם אתה חושב שזה שגיאה, בדוק את הרשאות המשתמש שלך במערכת.

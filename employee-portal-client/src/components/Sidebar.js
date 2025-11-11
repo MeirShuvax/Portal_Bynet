@@ -316,7 +316,7 @@ const Sidebar = ({ onNavigate = () => {} }) => {
           </Nav.Link>
         )}
 
-        <Nav.Link as={Link} to="/organizational-chart" onClick={onNavigate} className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}>
+        <Nav.Link as={Link} to="/company-posts" onClick={onNavigate} className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}>
           <FaBuilding /> פוסטים חברה
         </Nav.Link>
 

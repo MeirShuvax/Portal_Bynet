@@ -30,7 +30,7 @@ const AdminSettingsPage = () => {
                 <FaLock size={48} className="mb-3" style={{ color: '#bf2e1a' }} />
                 <h3 style={{ color: '#bf2e1a' }}>אין הרשאות מנהל</h3>
                 <p className="text-muted mb-3">
-                  דף זה זמין רק למנהלים. אם אתה מנהל ואתה רואה הודעה זו, אנא פנה למנהל המערכת.
+                  דף זה זמין רק למנהלי מערכת הפורטל. אם אתה סבור שיש לך הרשאות כאלה, פנה למנהל מערכת הפורטל (לא למנהלי החברה).
                 </p>
                 <Button variant="outline-primary" onClick={() => navigate('/')}>
                   חזור לדף הבית
