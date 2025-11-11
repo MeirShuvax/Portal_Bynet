@@ -4,7 +4,7 @@ import { PRIMARY_RED, PRIMARY_BLACK, WHITE } from '../constants';
 import bynetLogo from '../assets/bynet-logo.png';
 
 const LoginPage = ({ onLoginSuccess }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -14,6 +14,7 @@ const LoginPage = ({ onLoginSuccess }) => {
 
   const checkExistingAuth = async () => {
     try {
+      setIsLoading(true);
       const isAuth = await authService.isAuthenticated();
       if (isAuth) {
         const userData = authService.getCurrentUser();
@@ -21,6 +22,8 @@ const LoginPage = ({ onLoginSuccess }) => {
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -75,7 +78,9 @@ const LoginPage = ({ onLoginSuccess }) => {
         width: '100%',
         position: 'relative',
         zIndex: 1,
-        border: `2px solid ${PRIMARY_RED}`
+        border: `2px solid ${PRIMARY_RED}`,
+        opacity: isLoading ? 0.6 : 1,
+        transition: 'opacity 0.3s ease'
       }}>
         {/* Logo Section */}
         <div style={{ marginBottom: '2rem' }}>
@@ -208,6 +213,38 @@ const LoginPage = ({ onLoginSuccess }) => {
             </>
           )}
         </button>
+
+        {isLoading && (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(255, 255, 255, 0.88)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '20px',
+            gap: '1rem'
+          }}>
+            <div style={{
+              width: '36px',
+              height: '36px',
+              border: '4px solid #e2e8f0',
+              borderTop: `4px solid ${PRIMARY_RED}`,
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }} />
+            <div style={{
+              color: PRIMARY_BLACK,
+              fontWeight: 600
+            }}>
+              מחפש התחברות קיימת...
+            </div>
+          </div>
+        )}
 
         <div style={{
           marginTop: '2rem',
