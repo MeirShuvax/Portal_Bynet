@@ -1,69 +1,74 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { getMe } from '../services/apiService';
 import bynetLogo from '../assets/bynet-logo.png';
 import { PRIMARY_RED, PRIMARY_BLACK, getImageUrl } from '../constants';
 import ImageComponent from './ImageComponent';
 
+const resolveImageSrc = (candidate) => {
+  if (!candidate) {
+    return null;
+  }
+
+  if (typeof candidate === 'string' && (candidate.startsWith('http') || candidate.startsWith('/static/'))) {
+    return candidate;
+  }
+
+  return getImageUrl(candidate);
+};
+
 const UserCard = ({ name, image, date, honorType, user: propUser }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  console.log('UserCard received props:', { name, image, date, honorType, propUser });
-  console.log('UserCard current user state:', user);
-
   useEffect(() => {
-    // אם יש פרמטרים ישירים, השתמש בהם
     if (name || image || date || honorType) {
       setUser({
-        name: name,
         full_name: name,
         profile_image: image,
-        date: date,
-        honorType: honorType
+        date,
+        honorType,
       });
       setLoading(false);
       return;
     }
 
-    // אם יש user prop (מ-HonorCarouselPage), השתמש בו
     if (propUser) {
-      console.log('UserCard setting user from propUser:', propUser);
-      console.log('UserCard propUser.profile_image:', propUser.profile_image);
       setUser(propUser);
       setLoading(false);
       return;
     }
 
-    // אחרת, נסה לטעון משתמש נוכחי
     const fetchUser = async () => {
       try {
         setLoading(true);
         const data = await getMe();
         setUser(data.user);
       } catch (error) {
-        console.error("Failed to fetch user:", error);
+        console.error('Failed to fetch user:', error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchUser();
   }, [name, image, date, honorType, propUser]);
 
-  const defaultUser = {
-    name: 'משתמש אורח',
-    email: 'עובד בינת',
-    profileImage: bynetLogo,
-  };
+  const displayUser = useMemo(() => {
+    return {
+      email: 'עובד בינת',
+      ...(propUser || {}),
+      ...(user || {}),
+    };
+  }, [propUser, user]);
 
-  const displayUser = {
-    ...defaultUser,
-    ...(propUser || {}),
-    ...(user || {}),
-  };
-  console.log('UserCard displayUser:', displayUser);
-  console.log('UserCard propUser:', propUser);
-  console.log('UserCard profile_image path:', displayUser.profileImage || displayUser.profile_image);
+  const displayName = displayUser.full_name || displayUser.name || name || 'משתמש אורח';
+  const displayEmail =
+    displayUser.email || displayUser.title || (displayUser.honorType && displayUser.honorType.name) || 'עובד בינת';
+
+  const primaryImage =
+    image || displayUser.profile_image || displayUser.profileImage || displayUser.image || displayUser.avatarUrl;
+  const imageSrc = resolveImageSrc(primaryImage);
 
   if (loading) {
     return (
@@ -88,7 +93,7 @@ const UserCard = ({ name, image, date, honorType, user: propUser }) => {
         }}
       >
         <ImageComponent
-          src={getImageUrl(displayUser.profileImage || displayUser.profile_image)}
+          src={imageSrc}
           fallbackSrc={bynetLogo}
           roundedCircle
           style={{
@@ -96,15 +101,15 @@ const UserCard = ({ name, image, date, honorType, user: propUser }) => {
             height: '38px',
             objectFit: 'cover',
           }}
-          alt={displayUser.name || displayUser.full_name}
+          alt={displayName}
         />
       </div>
       <div className="text-end ms-3" style={{ maxWidth: '220px' }}>
         <h6 className="fw-bold mb-0" style={{ fontSize: '0.9rem' }}>
-          {displayUser.name || displayUser.full_name}
+          {displayName}
         </h6>
         <div className="text-muted" style={{ fontSize: '0.75rem' }}>
-          {displayUser.email || displayUser.title || (displayUser.honorType && displayUser.honorType.name) || 'עובד בינת'}
+          {displayEmail}
         </div>
         {displayUser.description && (
           <div className="mt-1" style={{ fontSize: '0.75rem', color: '#4a5568', whiteSpace: 'pre-wrap' }}>

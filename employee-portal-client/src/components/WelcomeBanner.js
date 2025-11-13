@@ -46,59 +46,100 @@ const WelcomeBanner = ({ imageUrl }) => {
             }} />
             
             <motion.div 
-                className="welcome-banner-content text-center"
+                className="welcome-banner-content"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
                 style={{ position: 'relative', zIndex: 1 }}
             >
-                <motion.div 
-                    className="welcome-banner-date"
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.3, duration: 0.4 }}
-                    style={{
-                        fontSize: '0.8rem',
-                        color: '#e2e8f0',
-                        marginBottom: '0.3rem',
-                        fontWeight: '500'
-                    }}
-                >
-                    {dateStr}
-                </motion.div>
-                
-                <motion.h2 
-                    className="welcome-banner-title"
-                    initial={{ y: 30, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
-                    style={{
-                        fontSize: '1.2rem',
-                        fontWeight: '700',
-                        color: '#ffffff',
-                        marginBottom: '0.5rem',
-                        lineHeight: '1.2'
-                    }}
-                >
-                    {welcomeMessage}
-                </motion.h2>
-                
-                <motion.div 
-                    className="welcome-banner-subtitle"
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.5, duration: 0.4 }}
-                    style={{
-                        fontSize: '0.8rem',
-                        color: '#cbd5e0',
-                        marginBottom: '0.5rem',
-                        lineHeight: '1.3',
-                        maxWidth: '500px',
-                        margin: '0 auto 0.5rem'
-                    }}
-                >
-                    {systemInfo}
-                </motion.div>
+                <div className="row align-items-center gy-2 gy-md-0 g-0 w-100">
+                    <div className="col-12 col-md-6 px-3 px-md-4" style={{ textAlign: 'center', minWidth: 0 }}>
+                        <motion.div 
+                            className="welcome-banner-date"
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.3, duration: 0.4 }}
+                            style={{
+                                fontSize: '0.8rem',
+                                color: '#e2e8f0',
+                                marginBottom: '0.3rem',
+                                fontWeight: '500'
+                            }}
+                        >
+                            {dateStr}
+                        </motion.div>
+                        
+                        <motion.h2 
+                            className="welcome-banner-title"
+                            initial={{ y: 30, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.4, duration: 0.5 }}
+                            style={{
+                                fontSize: '1.2rem',
+                                fontWeight: '700',
+                                color: '#ffffff',
+                                marginBottom: '0.5rem',
+                                lineHeight: '1.2'
+                            }}
+                        >
+                            {welcomeMessage}
+                        </motion.h2>
+                        
+                        <motion.div 
+                            className="welcome-banner-subtitle"
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.5, duration: 0.4 }}
+                            style={{
+                                fontSize: '0.8rem',
+                                color: '#cbd5e0',
+                                marginBottom: '0.5rem',
+                                lineHeight: '1.3',
+                                maxWidth: '500px',
+                                margin: '0 auto'
+                            }}
+                        >
+                            {systemInfo}
+                        </motion.div>
+                    </div>
+                    <div className="d-none d-md-block col-md-3" />
+                    <div className="col-12 col-md-3 d-flex justify-content-md-end justify-content-center align-items-center mt-2 mt-md-0 pt-md-3">
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6, duration: 0.4 }}
+                        >
+                            <a
+                                href="https://bynetdcs.co.il"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    color: '#cbd5e0',
+                                    fontSize: '0.8rem',
+                                    textDecoration: 'underline',
+                                    textDecorationColor: '#fff',
+                                    textDecorationThickness: '1px',
+                                    textUnderlineOffset: '4px',
+                                    fontWeight: 600,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.35rem'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.color = '#fff';
+                                    e.currentTarget.style.textDecorationColor = '#fff';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.color = '#cbd5e0';
+                                    e.currentTarget.style.textDecorationColor = '#fff';
+                                }}
+                            >
+                                מעבר לאתר Bynet Data Centers
+                                <span style={{ fontSize: '0.7rem' }}>↗</span>
+                            </a>
+                        </motion.div>
+                    </div>
+                </div>
             </motion.div>
             
             {/* Subtle sparkle effect */}

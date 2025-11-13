@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { FaImages, FaUsersCog, FaLock, FaLink } from 'react-icons/fa';
 
@@ -51,6 +51,9 @@ const AdminSettingsPage = () => {
           <p className="text-muted">
             נווט לכלי הניהול המרכזיים של הפורטל.
           </p>
+          <Alert variant="warning" className="mb-0" style={{ backgroundColor: '#fffbea', borderColor: '#fce588', color: '#856404' }}>
+            דף זה נמצא בפיתוח ולכן אין בו עדיין את כל אפשרויות ניהול האתר.
+          </Alert>
         </Col>
       </Row>
 

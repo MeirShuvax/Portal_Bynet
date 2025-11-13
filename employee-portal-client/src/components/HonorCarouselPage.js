@@ -50,9 +50,9 @@ const HonorCarouselPage = () => {
           return;
         }
 
-        const filteredHonors = honors.filter(
-          (h) => String(h.honors_type_id) === String(typeId)
-        );
+        const filteredHonors = honors
+          .filter((h) => String(h.honors_type_id) === String(typeId))
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         const peopleList = filteredHonors.map(h => ({
           id: h.user.id,

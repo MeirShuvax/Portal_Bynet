@@ -111,11 +111,8 @@ const WishesModal = ({ show, onHide, honorId, userName, isInline, isActive = tru
         >
           <Toast.Body>האיחול נשלח בהצלחה!</Toast.Body>
         </Toast>
-        <div className="d-flex justify-content-between align-items-center mb-2">
-          <div className="fw-bold" style={{ color: PRIMARY_RED }}>איחולים ל{userName}</div>
-          {onHide && (
-            <button type="button" className="btn-close" aria-label="סגור" onClick={onHide} style={{ fontSize: '1rem' }} />
-          )}
+        <div className="d-flex justify-content-center align-items-center mb-3">
+          <div className="fw-bold" style={{ color: PRIMARY_RED }}>איחולים</div>
         </div>
         
         {/* Birthday message for איציק inside the wishes page */}
