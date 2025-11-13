@@ -31,18 +31,13 @@ const HonorCarouselPage = () => {
       setLoading(true);
       setError(null);
 
-      let includeExpired = honorTypeName === 'מצטיינים';
-
       try {
-        let honors = await getHonorsByType(typeId, { includeExpired });
+        let honors = await getHonorsByType(typeId, { includeExpired: true });
 
-        const initialDetectedName = (honors[0]?.honorsType?.name || honorTypeName || '').trim();
-        if (initialDetectedName === 'מצטיינים' && !includeExpired) {
-          includeExpired = true;
-          honors = await getHonorsByType(typeId, { includeExpired: true });
-        }
+        const detectedNameFromData = (honors[0]?.honorsType?.name || honorTypeName || '').trim();
+        const shouldIncludeExpired = detectedNameFromData === 'מצטיינים';
 
-        if (!includeExpired) {
+        if (!shouldIncludeExpired) {
           honors = honors.filter((h) => h.isActive);
         }
 
