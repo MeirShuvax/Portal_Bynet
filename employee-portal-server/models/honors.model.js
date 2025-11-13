@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
     display_until: {
       type: DataTypes.DATE,
       allowNull: false
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     tableName: 'honors',
