@@ -201,66 +201,6 @@ async function insertImportantLinks() {
   }
 }
 
-// פונקציה להוספת משתמשי Microsoft
-async function insertMicrosoftUsers() {
-  const microsoftUsers = [
-    {
-      full_name: 'Meir Shuvax',
-      email: 'Meir.Shuvax@bynetdcs.co.il',
-      password: 'N/A', // Microsoft users don't need password
-      role: 'admin',
-      birth_date: null,
-      manager_id: null
-    },
-    {
-      full_name: 'Meir Shalom',
-      email: 'meirs@bynet.co.il',
-      password: 'N/A', // Microsoft users don't need password
-      role: 'admin',
-      birth_date: null,
-      manager_id: null
-    },
-    {
-      full_name: 'David Cholli',
-      email: 'David.Cholli@bynetdcs.co.il',
-      password: 'N/A', // Microsoft users don't need password
-      role: 'admin',
-      birth_date: null,
-      manager_id: null
-    },
-    {
-      full_name: 'Avi Zaafrani',
-      email: 'Avi.Zaafrani@bynetdcs.co.il',
-      password: 'N/A', // Microsoft users don't need password
-      role: 'admin',
-      birth_date: null,
-      manager_id: null
-    }
-  ];
-
-  for (const userData of microsoftUsers) {
-    try {
-      const existingUser = await User.findOne({ where: { email: userData.email } });
-      
-      if (!existingUser) {
-        await User.create(userData);
-        console.log(`✅ Microsoft user created: ${userData.email}`);
-      } else {
-        // עדכן את המשתמש הקיים להיות admin
-        if (existingUser.role !== 'admin') {
-          await existingUser.update({ role: 'admin' });
-          console.log(`✅ Updated user to admin: ${userData.email}`);
-        } else {
-          console.log(`ℹ️ Microsoft user already exists as admin: ${userData.email}`);
-        }
-      }
-    } catch (error) {
-      console.error(`❌ Error with user ${userData.email}:`, error.message);
-      // Continue with next user
-    }
-  }
-}
-
 async function createChatTable() {
   try {
     // await Chat.sync({ force: false }); // force: false אומר שלא למחוק את הטבלה אם היא קיימת
@@ -338,7 +278,6 @@ async function initializeDatabase() {
     console.log('✅ Connection to the database has been established successfully.');
     await syncModelsSafely();
     await insertInitialData();
-    await insertMicrosoftUsers();
     await insertImportantLinks();
     await updateExistingEmployeesWithManager();
     console.log('✅ Server setup completed successfully');
