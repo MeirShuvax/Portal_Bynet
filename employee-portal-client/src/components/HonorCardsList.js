@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spinner, Alert } from 'react-bootstrap';
-import { getHonorTypes, getActiveHonorsByType } from '../services/honorsService';
+import { getHonorTypes, getHonorsByType } from '../services/honorsService';
 import HonorCard from './HonorCard';
 
 const HonorCardsList = () => {
@@ -18,13 +18,22 @@ const HonorCardsList = () => {
         const peopleMap = {};
         await Promise.all(types.map(async (type) => {
           try {
-            const honors = await getActiveHonorsByType(type.id);
+            const includeExpired = (type.name || '').trim() === 'מצטיינים';
+            let honors = await getHonorsByType(type.id, { includeExpired });
+            if (!includeExpired) {
+              honors = honors.filter((h) => h.isActive);
+            }
+            const filteredHonors = honors.filter((h) => String(h.honors_type_id) === String(type.id));
             // שלוף את המשתמשים מתוך honors עם honorType
-            peopleMap[type.id] = honors.map(h => ({
+            peopleMap[type.id] = filteredHonors.map(h => ({
               ...h.user,
-              honorType: type,
+              name: h.user.full_name,
+              honorType: h.honorsType || type,
               honorId: h.id,
-              date: h.createdAt
+              date: h.createdAt,
+              description: h.description,
+              isActive: h.isActive,
+              displayUntil: h.display_until
             }));
             console.log(`HonorCardsList type ${type.id} (${type.name}) people:`, peopleMap[type.id]);
           } catch (e) {

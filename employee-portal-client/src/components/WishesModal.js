@@ -8,7 +8,7 @@ const PRIMARY_RED = '#bf2e1a';
 const PRIMARY_BLACK = '#1a202c';
 const WHITE = '#fff';
 
-const WishesModal = ({ show, onHide, honorId, userName, isInline }) => {
+const WishesModal = ({ show, onHide, honorId, userName, isInline, isActive = true, displayUntil }) => {
   const [wishes, setWishes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -30,8 +30,13 @@ const WishesModal = ({ show, onHide, honorId, userName, isInline }) => {
     }
   }, [show, honorId]);
 
+  const canSendWish = Boolean(isActive);
+
   const handleSend = async (e) => {
     e.preventDefault();
+    if (!canSendWish) {
+      return;
+    }
     setSending(true);
     setSendError(null);
     try {
@@ -61,6 +66,10 @@ const WishesModal = ({ show, onHide, honorId, userName, isInline }) => {
       setSending(false);
     }
   };
+
+  const formattedDisplayUntil = displayUntil
+    ? new Date(displayUntil).toLocaleString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    : null;
 
   if (isInline) {
     return (
@@ -104,7 +113,9 @@ const WishesModal = ({ show, onHide, honorId, userName, isInline }) => {
         </Toast>
         <div className="d-flex justify-content-between align-items-center mb-2">
           <div className="fw-bold" style={{ color: PRIMARY_RED }}>איחולים ל{userName}</div>
-          <button type="button" className="btn-close" aria-label="סגור" onClick={onHide} style={{ fontSize: '1rem' }} />
+          {onHide && (
+            <button type="button" className="btn-close" aria-label="סגור" onClick={onHide} style={{ fontSize: '1rem' }} />
+          )}
         </div>
         
         {/* Birthday message for איציק inside the wishes page */}
@@ -133,7 +144,11 @@ const WishesModal = ({ show, onHide, honorId, userName, isInline }) => {
           <Alert variant="danger">{error}</Alert>
         ) : (
           <ListGroup variant="flush">
-            {wishes.length === 0 && <div className="text-center text-muted">אין עדיין איחולים</div>}
+            {wishes.length === 0 && (
+              <div className="text-center text-muted">
+                {canSendWish ? 'אין עדיין איחולים' : 'אין איחולים'}
+              </div>
+            )}
             {wishes.map(wish => (
               <ListGroup.Item key={wish.id} className="py-2 px-1">
                 <div className="fw-bold" style={{ fontSize: '0.95rem', color: PRIMARY_RED }}>{wish.fromUser?.full_name || 'אנונימי'}</div>
@@ -143,49 +158,66 @@ const WishesModal = ({ show, onHide, honorId, userName, isInline }) => {
             ))}
           </ListGroup>
         )}
-        <Form onSubmit={handleSend} className="mt-2">
-          <Form.Group controlId="wishMessage">
-            <Form.Label style={{ fontSize: '0.95rem', color: PRIMARY_BLACK }}>כתוב איחול חדש</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={2}
-              value={message}
-              onChange={e => setMessage(e.target.value)}
-              disabled={sending}
-              required
+        {canSendWish && formattedDisplayUntil && (
+          <div className="text-center text-muted mt-2" style={{ fontSize: '0.8rem' }}>
+            ניתן לשלוח איחולים עד {formattedDisplayUntil}
+          </div>
+        )}
+        {canSendWish && (
+          <Form onSubmit={handleSend} className="mt-2">
+            <Form.Group controlId="wishMessage">
+              <Form.Label style={{ fontSize: '0.95rem', color: PRIMARY_BLACK }}>כתוב איחול חדש</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={2}
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+                disabled={sending}
+                required
+                style={{ 
+                  fontSize: '0.95rem', 
+                  borderColor: PRIMARY_RED, 
+                  background: WHITE,
+                  '&:focus': {
+                    borderColor: PRIMARY_RED,
+                    boxShadow: `0 0 0 0.2rem rgba(191, 46, 26, 0.25)`
+                  }
+                }}
+              />
+            </Form.Group>
+            {sendError && <Alert variant="danger" className="mt-2">{sendError}</Alert>}
+            <Button 
+              type="submit" 
+              className="mt-2 w-100 btn-sm"
+              disabled={sending || !message} 
               style={{ 
-                fontSize: '0.95rem', 
-                borderColor: PRIMARY_RED, 
-                background: WHITE,
-                '&:focus': {
-                  borderColor: PRIMARY_RED,
-                  boxShadow: `0 0 0 0.2rem rgba(191, 46, 26, 0.25)`
+                backgroundColor: PRIMARY_RED, 
+                borderColor: PRIMARY_RED,
+                '&:hover': {
+                  backgroundColor: '#a02615',
+                  borderColor: '#a02615'
                 }
               }}
-            />
-          </Form.Group>
-          {sendError && <Alert variant="danger" className="mt-2">{sendError}</Alert>}
-          <Button 
-            type="submit" 
-            className="mt-2 w-100 btn-sm"
-            disabled={sending || !message} 
-            style={{ 
-              backgroundColor: PRIMARY_RED, 
-              borderColor: PRIMARY_RED,
-              '&:hover': {
-                backgroundColor: '#a02615',
-                borderColor: '#a02615'
-              }
-            }}
-          >
-            {sending ? 'שולח...' : 'שלח איחול'}
-          </Button>
-        </Form>
+            >
+              {sending ? 'שולח...' : 'שלח איחול'}
+            </Button>
+          </Form>
+        )}
         {/* Custom CSS for Swiper navigation buttons */}
         <style>{`
           .swiper-button-next,
           .swiper-button-prev {
             color: ${PRIMARY_RED} !important;
+            top: 50%;
+            width: 36px;
+            height: 36px;
+            transform: translateY(-50%);
+          }
+          .swiper-button-next {
+            right: -2.8rem;
+          }
+          .swiper-button-prev {
+            left: -2.8rem;
           }
           .swiper-button-next:hover,
           .swiper-button-prev:hover {
@@ -194,6 +226,37 @@ const WishesModal = ({ show, onHide, honorId, userName, isInline }) => {
           .swiper-button-next:after,
           .swiper-button-prev:after {
             color: ${PRIMARY_RED} !important;
+            font-size: 28px;
+          }
+          .swiper-pagination-bullet {
+            background: ${PRIMARY_RED} !important;
+            opacity: 0.35;
+          }
+          .swiper-pagination-bullet-active {
+            background: ${PRIMARY_RED} !important;
+            opacity: 1;
+          }
+          @media (max-width: 1200px) {
+            .swiper-button-next {
+              right: -2.2rem;
+            }
+            .swiper-button-prev {
+              left: -2.2rem;
+            }
+          }
+          @media (max-width: 768px) {
+            .swiper-button-next {
+              right: -1.6rem;
+            }
+            .swiper-button-prev {
+              left: -1.6rem;
+            }
+          }
+          @media (max-width: 576px) {
+            .swiper-button-next,
+            .swiper-button-prev {
+              display: none;
+            }
           }
         `}</style>
       </div>
@@ -229,18 +292,18 @@ const WishesModal = ({ show, onHide, honorId, userName, isInline }) => {
       )}
       
       
-      <Toast
-        show={showSuccessToast}
-        onClose={() => setShowSuccessToast(false)}
-        delay={2000}
-        autohide
-        className="wish-toast-center"
-        style={{ backgroundColor: PRIMARY_RED, color: WHITE }}
-      >
-        <Toast.Body>האיחול נשלח בהצלחה!</Toast.Body>
-      </Toast>
+        <Toast
+          show={showSuccessToast}
+          onClose={() => setShowSuccessToast(false)}
+          delay={2000}
+          autohide
+          className="wish-toast-center"
+          style={{ backgroundColor: PRIMARY_RED, color: WHITE }}
+        >
+          <Toast.Body>האיחול נשלח בהצלחה!</Toast.Body>
+        </Toast>
       <Modal.Header closeButton>
-        <Modal.Title style={{ color: PRIMARY_RED }}>איחולים ל{userName}</Modal.Title>
+        <Modal.Title style={{ color: PRIMARY_RED }}>איחולים</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {/* Birthday message for איציק inside the modal */}
@@ -269,7 +332,11 @@ const WishesModal = ({ show, onHide, honorId, userName, isInline }) => {
           <Alert variant="danger">{error}</Alert>
         ) : (
           <ListGroup variant="flush">
-            {wishes.length === 0 && <div className="text-center text-muted">אין עדיין איחולים</div>}
+            {wishes.length === 0 && (
+              <div className="text-center text-muted">
+                {canSendWish ? 'אין עדיין איחולים' : 'אין איחולים'}
+              </div>
+            )}
             {wishes.map(wish => (
               <ListGroup.Item key={wish.id}>
                 <div className="fw-bold" style={{ color: PRIMARY_RED }}>{wish.fromUser?.full_name || 'אנונימי'}</div>
@@ -279,47 +346,61 @@ const WishesModal = ({ show, onHide, honorId, userName, isInline }) => {
             ))}
           </ListGroup>
         )}
-        <Form onSubmit={handleSend} className="mt-3">
-          <Form.Group controlId="wishMessage">
-            <Form.Label style={{ color: PRIMARY_BLACK }}>כתוב איחול חדש</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={2}
-              value={message}
-              onChange={e => setMessage(e.target.value)}
-              disabled={sending}
-              required
-              style={{ 
-                borderColor: PRIMARY_RED,
-                '&:focus': {
+        {canSendWish && formattedDisplayUntil && (
+          <div className="text-center text-muted mt-3" style={{ fontSize: '0.85rem' }}>
+            ניתן לשלוח איחולים עד {formattedDisplayUntil}
+          </div>
+        )}
+        {canSendWish && (
+          <Form onSubmit={handleSend} className="mt-3">
+            <Form.Group controlId="wishMessage">
+              <Form.Label style={{ color: PRIMARY_BLACK }}>כתוב איחול חדש</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={2}
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+                disabled={sending}
+                required
+                style={{ 
                   borderColor: PRIMARY_RED,
-                  boxShadow: `0 0 0 0.2rem rgba(191, 46, 26, 0.25)`
+                  '&:focus': {
+                    borderColor: PRIMARY_RED,
+                    boxShadow: `0 0 0 0.2rem rgba(191, 46, 26, 0.25)`
+                  }
+                }}
+              />
+            </Form.Group>
+            {sendError && <Alert variant="danger" className="mt-2">{sendError}</Alert>}
+            <Button 
+              type="submit" 
+              className="mt-2 w-100"
+              disabled={sending || !message}
+              style={{ 
+                backgroundColor: PRIMARY_RED, 
+                borderColor: PRIMARY_RED,
+                '&:hover': {
+                  backgroundColor: '#a02615',
+                  borderColor: '#a02615'
                 }
               }}
-            />
-          </Form.Group>
-          {sendError && <Alert variant="danger" className="mt-2">{sendError}</Alert>}
-          <Button 
-            type="submit" 
-            className="mt-2 w-100"
-            disabled={sending || !message}
-            style={{ 
-              backgroundColor: PRIMARY_RED, 
-              borderColor: PRIMARY_RED,
-              '&:hover': {
-                backgroundColor: '#a02615',
-                borderColor: '#a02615'
-              }
-            }}
-          >
-            {sending ? 'שולח...' : 'שלח איחול'}
-          </Button>
-        </Form>
+            >
+              {sending ? 'שולח...' : 'שלח איחול'}
+            </Button>
+          </Form>
+        )}
         {/* Custom CSS for Swiper navigation buttons */}
         <style>{`
           .swiper-button-next,
           .swiper-button-prev {
             color: ${PRIMARY_RED} !important;
+            top: 55%;
+          }
+          .swiper-button-next {
+            right: -26px;
+          }
+          .swiper-button-prev {
+            left: -26px;
           }
           .swiper-button-next:hover,
           .swiper-button-prev:hover {
@@ -328,6 +409,12 @@ const WishesModal = ({ show, onHide, honorId, userName, isInline }) => {
           .swiper-button-next:after,
           .swiper-button-prev:after {
             color: ${PRIMARY_RED} !important;
+          }
+          @media (max-width: 576px) {
+            .swiper-button-next,
+            .swiper-button-prev {
+              display: none;
+            }
           }
         `}</style>
       </Modal.Body>

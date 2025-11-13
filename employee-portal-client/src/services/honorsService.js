@@ -15,4 +15,16 @@ export async function getHonorTypes() {
  */
 export async function getActiveHonorsByType(typeId) {
   return apiCall(`/honors/by-type/${typeId}/active`, 'GET');
-} 
+}
+
+/**
+ * Fetch honors by type ID.
+ * @param {number|string} typeId
+ * @param {{ includeExpired?: boolean }} [options]
+ * @returns {Promise<Array<object>>}
+ */
+export async function getHonorsByType(typeId, options = {}) {
+  const { includeExpired = false } = options;
+  const query = includeExpired ? '?includeExpired=true' : '';
+  return apiCall(`/honors/by-type/${typeId}${query}`, 'GET');
+}

@@ -255,7 +255,7 @@ const Sidebar = ({ onNavigate = () => {} }) => {
                 onMouseEnter={(e) => (e.target.style.backgroundColor = '#4a5568')}
                 onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
               >
-                <FaInfoCircle style={{ marginLeft: '8px' }} /> כללי החברה
+                <FaInfoCircle style={{ marginLeft: '8px' }} /> יסודות החברה
               </button>
               <button
                 onClick={() => handleFileOpen('Safety_board.pdf', 'pdf')}

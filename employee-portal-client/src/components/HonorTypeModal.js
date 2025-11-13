@@ -21,12 +21,7 @@ const HonorTypeModal = ({ show, onHide, people, title }) => {
         {people.length === 1 ? (
           <div className="d-flex flex-column align-items-center justify-content-center">
             <div style={{ width: '100%', maxWidth: 320 }}>
-              <UserCard
-                name={people[0].name}
-                image={people[0].image}
-                date={people[0].date}
-                honorType={people[0].honorType}
-              />
+              <UserCard user={people[0]} />
             </div>
             <div className="mt-3 w-100" style={{ maxWidth: 400 }}>
               <WishesModal
@@ -34,6 +29,8 @@ const HonorTypeModal = ({ show, onHide, people, title }) => {
                 onHide={() => {}}
                 honorId={people[0].honorId}
                 userName={people[0].name}
+                isActive={people[0].isActive}
+                displayUntil={people[0].displayUntil}
                 isInline
               />
             </div>
@@ -43,12 +40,7 @@ const HonorTypeModal = ({ show, onHide, people, title }) => {
             {people.map((person, idx) => (
               <div className="col-12 col-md-6 col-lg-4" key={person.honorId || person.id}>
                 <div>
-                  <UserCard
-                    name={person.name}
-                    image={person.image}
-                    date={person.date}
-                    honorType={person.honorType}
-                  />
+                  <UserCard user={person} />
                 </div>
                 <div className="mt-2">
                   <WishesModal
@@ -56,6 +48,8 @@ const HonorTypeModal = ({ show, onHide, people, title }) => {
                     onHide={() => {}}
                     honorId={person.honorId}
                     userName={person.name}
+                    isActive={person.isActive}
+                    displayUntil={person.displayUntil}
                     isInline
                   />
                 </div>

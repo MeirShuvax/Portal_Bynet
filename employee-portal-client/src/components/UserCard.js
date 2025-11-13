@@ -56,7 +56,11 @@ const UserCard = ({ name, image, date, honorType, user: propUser }) => {
     profileImage: bynetLogo,
   };
 
-  const displayUser = user || propUser || defaultUser;
+  const displayUser = {
+    ...defaultUser,
+    ...(propUser || {}),
+    ...(user || {}),
+  };
   console.log('UserCard displayUser:', displayUser);
   console.log('UserCard propUser:', propUser);
   console.log('UserCard profile_image path:', displayUser.profileImage || displayUser.profile_image);
@@ -95,13 +99,18 @@ const UserCard = ({ name, image, date, honorType, user: propUser }) => {
           alt={displayUser.name || displayUser.full_name}
         />
       </div>
-      <div className="text-end ms-3">
+      <div className="text-end ms-3" style={{ maxWidth: '220px' }}>
         <h6 className="fw-bold mb-0" style={{ fontSize: '0.9rem' }}>
           {displayUser.name || displayUser.full_name}
         </h6>
         <div className="text-muted" style={{ fontSize: '0.75rem' }}>
           {displayUser.email || displayUser.title || (displayUser.honorType && displayUser.honorType.name) || 'עובד בינת'}
         </div>
+        {displayUser.description && (
+          <div className="mt-1" style={{ fontSize: '0.75rem', color: '#4a5568', whiteSpace: 'pre-wrap' }}>
+            {displayUser.description}
+          </div>
+        )}
       </div>
     </div>
   );

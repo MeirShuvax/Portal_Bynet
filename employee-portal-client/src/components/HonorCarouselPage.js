@@ -1,71 +1,106 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getActiveHonorsByType } from '../services/honorsService';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { getHonorsByType } from '../services/honorsService';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, A11y } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import UserCard from './UserCard';
 import WishesModal from './WishesModal';
 import { Button, Spinner, Alert, Container } from 'react-bootstrap';
 import '../styles/birthday-animations.css';
+import ImageComponent from './ImageComponent';
+import { getImageUrl, PRIMARY_RED, PRIMARY_BLACK } from '../constants';
+import bynetLogo from '../assets/bynet-logo.png';
 
 const HonorCarouselPage = () => {
   const { typeId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [people, setPeople] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [showBalloons, setShowBalloons] = useState(false);
-  const [honorTypeName, setHonorTypeName] = useState('');
+  const [honorTypeName, setHonorTypeName] = useState((location.state?.honorTypeName || '').trim());
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-    getActiveHonorsByType(typeId)
-      .then(honors => {
-        console.log('HonorCarouselPage received honors:', honors);
-        const peopleList = honors.map(h => ({
+    let cancelled = false;
+
+    const loadHonors = async () => {
+      setLoading(true);
+      setError(null);
+
+      let includeExpired = honorTypeName === 'מצטיינים';
+
+      try {
+        let honors = await getHonorsByType(typeId, { includeExpired });
+
+        const initialDetectedName = (honors[0]?.honorsType?.name || honorTypeName || '').trim();
+        if (initialDetectedName === 'מצטיינים' && !includeExpired) {
+          includeExpired = true;
+          honors = await getHonorsByType(typeId, { includeExpired: true });
+        }
+
+        if (!includeExpired) {
+          honors = honors.filter((h) => h.isActive);
+        }
+
+        if (cancelled) {
+          return;
+        }
+
+        const filteredHonors = honors.filter(
+          (h) => String(h.honors_type_id) === String(typeId)
+        );
+
+        const peopleList = filteredHonors.map(h => ({
           id: h.user.id,
           name: h.user.full_name,
           full_name: h.user.full_name,
           profile_image: h.user.profile_image,
           date: h.createdAt,
           honorId: h.id,
-          honorType: h.honorsType, // כאן מגיע name נכון
+          honorType: h.honorsType,
+          description: h.description,
+          displayUntil: h.display_until,
+          isActive: h.isActive,
         }));
-        console.log('HonorCarouselPage peopleList:', peopleList);
-        console.log('HonorCarouselPage - Avi data:', peopleList.find(p => p.full_name === 'Avi Zaafrani'));
-        
-        // Debug each person's data
-        peopleList.forEach((person, index) => {
-          console.log(`🔍 HonorCarouselPage person ${index}:`, {
-            id: person.id,
-            full_name: person.full_name,
-            profile_image: person.profile_image
-          });
-        });
+
         setPeople(peopleList);
-        
-        // Set honor type name
-        if (peopleList.length > 0 && peopleList[0].honorType) {
-          setHonorTypeName(peopleList[0].honorType.name);
+
+        const detectedName = (peopleList[0]?.honorType?.name || honors[0]?.honorsType?.name || honorTypeName || '').trim();
+        if (detectedName && detectedName !== honorTypeName) {
+          setHonorTypeName(detectedName);
         }
-        
-        // Show balloons animation for birthday honors
-        const isBirthdayHonor = peopleList.some(person => 
+
+        const isBirthdayHonor = peopleList.some(person =>
           person.honorType && person.honorType.name === 'יום הולדת שמח'
         );
         if (isBirthdayHonor) {
           setShowBalloons(true);
           setTimeout(() => setShowBalloons(false), 4000);
+        } else {
+          setShowBalloons(false);
         }
-      })
-      .catch(() => setError('שגיאה בטעינת האנשים'))
-      .finally(() => setLoading(false));
-  }, [typeId]);
+      } catch (err) {
+        if (!cancelled) {
+          console.error('Failed to load honors', err);
+          setError('שגיאה בטעינת האנשים');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadHonors();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [typeId, location.state?.honorTypeName]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // פונקציה לקבלת הכותרת המתאימה
   const getPageTitle = () => {
@@ -96,6 +131,48 @@ const HonorCarouselPage = () => {
           return '🎊 דפדוף בין האנשים 🎊';
       }
     }
+  };
+
+  const currentPerson = people[activeIndex] || people[0];
+
+  const getInitials = (name = '') => {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) {
+      return '';
+    }
+    return parts.slice(0, 2).map(part => part[0]?.toUpperCase() || '').join('');
+  };
+
+  const renderAvatar = (person) => {
+    if (person.profile_image) {
+      return (
+        <ImageComponent
+          src={getImageUrl(person.profile_image)}
+          fallbackSrc={bynetLogo}
+          alt={person.full_name}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+      );
+    }
+
+    const initials = getInitials(person.full_name);
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '2.4rem',
+          fontWeight: 'bold',
+          color: '#fff',
+          background: `linear-gradient(135deg, ${PRIMARY_RED}, #f08a75)`
+        }}
+      >
+        {initials || '?'}
+      </div>
+    );
   };
 
   return (
@@ -131,9 +208,40 @@ const HonorCarouselPage = () => {
       )}
       
       <Button variant="link" onClick={() => navigate(-1)} className="mb-3" style={{ color: '#bf2e1a', textDecoration: 'none' }}>⬅ חזרה</Button>
-      <h2 className="text-center mb-4" style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#bf2e1a' }}>
-        {getPageTitle()}
-      </h2>
+      {currentPerson && (
+        <div className="text-center mb-4" dir="rtl">
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#bf2e1a', marginBottom: '1rem' }}>
+            {getPageTitle()}
+          </h2>
+          <div
+            style={{
+              width: 140,
+              height: 140,
+              borderRadius: '50%',
+              border: `4px solid ${PRIMARY_RED}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              boxShadow: '0 6px 18px rgba(0,0,0,0.18)',
+              backgroundColor: '#fff',
+              margin: '0 auto'
+            }}
+          >
+            {renderAvatar(currentPerson)}
+          </div>
+          <div style={{ marginTop: '1.2rem' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: 600, color: PRIMARY_RED }}>
+              {currentPerson.full_name}
+            </div>
+            {currentPerson.description && (
+              <div style={{ fontSize: '1rem', color: PRIMARY_BLACK, marginTop: '0.6rem', whiteSpace: 'pre-wrap' }}>
+                {currentPerson.description}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {loading ? (
         <div className="text-center my-5"><Spinner animation="border" /></div>
       ) : error ? (
@@ -150,23 +258,18 @@ const HonorCarouselPage = () => {
           onSlideChange={swiper => setActiveIndex(swiper.activeIndex)}
           style={{ maxWidth: 420, margin: '0 auto' }}
         >
-          {people.map((person, idx) => (
+          {people.map((person) => (
             <SwiperSlide key={person.id}>
-              <div className="d-flex flex-column align-items-center">
-                <UserCard
-                  user={person}
-                  date={person.date}
-                  honorType={person.honorType}
+              <div className="w-100">
+                <WishesModal
+                  show={true}
+                  onHide={() => {}}
+                  honorId={person.honorId}
+                  userName={person.name}
+                  isActive={person.isActive}
+                  displayUntil={person.displayUntil}
+                  isInline
                 />
-                <div className="w-100 mt-3">
-                  <WishesModal
-                    show={true}
-                    onHide={() => {}}
-                    honorId={person.honorId}
-                    userName={person.name}
-                    isInline
-                  />
-                </div>
               </div>
             </SwiperSlide>
           ))}
