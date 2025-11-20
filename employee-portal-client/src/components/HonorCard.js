@@ -102,6 +102,28 @@ const HonorCard = ({ honorType, people = [] }) => {
             👋 ברוכים הבאים לפאולה! 👋
           </div>
         )}
+
+        {(honorType.name === 'שמחות' || honorType.name?.includes('שמחות')) && (
+          <div
+            className="rotating-text"
+            style={{
+              position: 'absolute',
+              top: '5px',
+              right: '5px',
+              background: 'linear-gradient(45deg, #ff9a9e, #fad0c4)',
+              color: '#bf2e1a',
+              padding: '3px 10px',
+              borderRadius: '12px',
+              fontSize: '11px',
+              fontWeight: 'bold',
+              zIndex: 10,
+              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+              border: '2px solid rgba(255,255,255,0.8)'
+            }}
+          >
+            👶 נסיך נולד לעמית 👶
+          </div>
+        )}
         
         
         {/* Icon at the top */}

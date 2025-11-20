@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Container, Row, Col, Card, Spinner, Alert, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Card, Spinner, Alert, Badge, Button } from 'react-bootstrap';
 import { FaLinkedin, FaExternalLinkAlt } from 'react-icons/fa';
 import { fetchCompanyPosts } from '../services/linkedinService';
 
@@ -42,6 +42,7 @@ const CompanyPostsPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
     const loadPosts = async () => {
@@ -50,6 +51,7 @@ const CompanyPostsPage = () => {
         setError('');
         const data = await fetchCompanyPosts();
         setPosts(data);
+        setLastUpdated(new Date());
       } catch (err) {
         console.error('Failed to load LinkedIn posts:', err);
         setError('לא הצלחנו לטעון את הפוסטים מלינקדאין. נסו שוב מאוחר יותר.');
@@ -69,6 +71,33 @@ const CompanyPostsPage = () => {
     });
   }, [posts]);
 
+  const stats = useMemo(() => {
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+    const monthAgo = Date.now() - THIRTY_DAYS_MS;
+    const newPosts = orderedPosts.filter((post) => {
+      const createdAt = Number(post?.createdAt || 0);
+      return !Number.isNaN(createdAt) && createdAt >= monthAgo;
+    });
+
+    return {
+      total: orderedPosts.length,
+      last30Days: newPosts.length,
+      lastUpdated
+    };
+  }, [orderedPosts, lastUpdated]);
+
+  const formatDateTime = (date) => {
+    if (!date) return '';
+    try {
+      return new Intl.DateTimeFormat('he-IL', {
+        dateStyle: 'short',
+        timeStyle: 'short'
+      }).format(date);
+    } catch {
+      return '';
+    }
+  };
+
   return (
     <Container className="py-4" dir="rtl">
       <Row className="align-items-center mb-4">
@@ -80,6 +109,42 @@ const CompanyPostsPage = () => {
           <p className="text-muted mb-0">
             עדכונים ישירות מעמוד החברה בלינקדאין – בינת דאטה סנטרס.
           </p>
+        </Col>
+      </Row>
+
+      <Row className="gy-3 mb-4">
+        <Col md={4}>
+          <Card className="shadow-sm border-0 h-100" style={{ background: 'linear-gradient(135deg,#0a66c2,#004182)', color: '#fff' }}>
+            <Card.Body>
+              <div className="text-uppercase" style={{ fontSize: '0.8rem', letterSpacing: '0.08em', opacity: 0.8 }}>
+                סה״כ פוסטים
+              </div>
+              <div style={{ fontSize: '2.6rem', fontWeight: 700 }}>{stats.total}</div>
+              <div style={{ fontSize: '0.9rem', opacity: 0.85 }}>מוצגים בפורטל</div>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4}>
+          <Card className="shadow-sm border-0 h-100">
+            <Card.Body>
+              <div className="text-uppercase text-muted" style={{ fontSize: '0.8rem', letterSpacing: '0.08em' }}>
+                חדשים החודש
+              </div>
+              <div style={{ fontSize: '2.6rem', fontWeight: 700, color: '#bf2e1a' }}>{stats.last30Days}</div>
+              <div style={{ fontSize: '0.9rem', color: '#4a5568' }}>פורסמו ב־30 הימים האחרונים</div>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4}>
+          <Card className="shadow-sm border-0 h-100">
+            <Card.Body>
+              <div className="text-uppercase text-muted" style={{ fontSize: '0.8rem', letterSpacing: '0.08em' }}>
+                עודכן לאחרונה
+              </div>
+              <div style={{ fontSize: '1.3rem', fontWeight: 600 }}>{formatDateTime(stats.lastUpdated)}</div>
+              <div style={{ fontSize: '0.9rem', color: '#4a5568' }}>עדכונים בזמן אמת מהשרת</div>
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
 
@@ -107,6 +172,8 @@ const CompanyPostsPage = () => {
           const mediaPreview = getMediaPreview(post);
           const imageUrl = mediaPreview?.thumbnail || mediaPreview?.url;
           const postUrl = post?.permalink || post?.url || (Array.isArray(post?.permalinks) ? post.permalinks[0] : null);
+          const createdAt = Number(post?.createdAt || 0);
+          const isNew = !Number.isNaN(createdAt) && createdAt >= Date.now() - 30 * 24 * 60 * 60 * 1000;
 
           return (
             <Col md={6} key={post.id}>
@@ -141,25 +208,30 @@ const CompanyPostsPage = () => {
                   </div>
                 )}
                 <Card.Body className="d-flex flex-column">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
+                  <div className="d-flex justify-content-between align-items-center mb-2 gap-2">
                     <Badge bg="light" text="dark">
                       לינקדאין
                     </Badge>
-                    <small className="text-muted">{formatDate(post.createdAt)}</small>
+                    {isNew && (
+                      <Badge bg="danger">
+                        חדש
+                      </Badge>
+                    )}
+                    <small className="text-muted ms-auto">{formatDate(post.createdAt)}</small>
                   </div>
                   <Commentary text={post.commentary} />
                   <div className="mt-auto">
                     {postUrl && (
-                      <a
+                      <Button
+                        variant="outline-primary"
                         href={postUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="d-inline-flex align-items-center gap-2 text-decoration-none"
-                        style={{ color: '#0a66c2', fontWeight: 600 }}
+                        className="d-inline-flex align-items-center gap-2"
                       >
                         פתח את הפוסט בלינקדאין
                         <FaExternalLinkAlt size={14} />
-                      </a>
+                      </Button>
                     )}
                   </div>
                 </Card.Body>

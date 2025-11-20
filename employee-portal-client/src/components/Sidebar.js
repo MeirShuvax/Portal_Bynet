@@ -8,6 +8,7 @@ import filesService from '../services/filesService';
 import toastService from '../services/toastService';
 import ImageViewer from './ImageViewer';
 import logo from '../assets/bynet-logo.png';
+import { fetchCompanyPosts } from '../services/linkedinService';
 
 const UNREAD_KEY = 'chat_unread_messages';
 
@@ -18,6 +19,7 @@ const Sidebar = ({ onNavigate = () => {} }) => {
   const [showEthicalCodeDropdown, setShowEthicalCodeDropdown] = useState(false);
   const [imageViewer, setImageViewer] = useState({ isOpen: false, url: '', filename: '' });
   const [unreadCount, setUnreadCount] = useState(0);
+  const [newPostsCount, setNewPostsCount] = useState(0);
 
   // Debug: Log user role
   useEffect(() => {
@@ -68,6 +70,37 @@ const Sidebar = ({ onNavigate = () => {} }) => {
     };
 
     fetchHonorTypes();
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
+    const updatePostsCount = async () => {
+      try {
+        const posts = await fetchCompanyPosts();
+        const monthAgo = Date.now() - THIRTY_DAYS_MS;
+        const count = Array.isArray(posts)
+          ? posts.filter((post) => {
+              const createdAt = Number(post?.createdAt || post?.created_at || 0);
+              return !Number.isNaN(createdAt) && createdAt >= monthAgo;
+            }).length
+          : 0;
+        if (isMounted) {
+          setNewPostsCount(count);
+        }
+      } catch (error) {
+        console.warn('Failed to fetch LinkedIn posts count:', error?.message || error);
+      }
+    };
+
+    updatePostsCount();
+    const interval = setInterval(updatePostsCount, 15 * 60 * 1000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const handleImageOpen = (url, filename) => {
@@ -316,8 +349,23 @@ const Sidebar = ({ onNavigate = () => {} }) => {
           </Nav.Link>
         )}
 
-        <Nav.Link as={Link} to="/company-posts" onClick={onNavigate} className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}>
+        <Nav.Link
+          as={Link}
+          to="/company-posts"
+          onClick={onNavigate}
+          className="text-white d-flex justify-content-start align-items-center gap-2 py-2 position-relative"
+          style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}
+        >
           <FaBuilding /> פוסטים חברה
+          {newPostsCount > 0 && (
+            <Badge
+              bg="danger"
+              className="ms-auto"
+              style={{ fontSize: '0.7rem', padding: '2px 6px', borderRadius: '12px' }}
+            >
+              {newPostsCount}
+            </Badge>
+          )}
         </Nav.Link>
 
         <Nav.Link as={Link} to="/about" onClick={onNavigate} className="text-white d-flex justify-content-start align-items-center gap-2 py-2" style={{ fontSize: '1rem', minHeight: '32px', textAlign: 'left', width: '100%' }}>
