@@ -76,7 +76,7 @@ const HonorCard = ({ honorType, people = [] }) => {
               border: '2px solid rgba(255,255,255,0.8)'
             }}
           >
-            🎉 מזל טוב למוטי! 🎉
+            🎉 מזל טוב לאפרת ! 🎉
           </div>
         )}
 
