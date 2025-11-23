@@ -57,7 +57,7 @@ const HonorCard = ({ honorType, people = [] }) => {
       onClick={handleNavigate}
     >
       <Card.Body className="d-flex flex-column align-items-center justify-content-between p-2">
-        {/* Awesome birthday text for איציק */}
+    
         {isBirthday && (
           <div 
             className="rotating-text"
@@ -81,7 +81,7 @@ const HonorCard = ({ honorType, people = [] }) => {
         )}
 
         {/* Awesome welcome text for פאולה */}
-        {honorType.name === 'ברוכים הבאים' && (
+        {/* {honorType.name === 'ברוכים הבאים' && (
           <div 
             className="rotating-text"
             style={{
@@ -101,7 +101,7 @@ const HonorCard = ({ honorType, people = [] }) => {
           >
             👋 ברוכים הבאים לפאולה! 👋
           </div>
-        )}
+        )} */}
 
         {(honorType.name === 'שמחות' || honorType.name?.includes('שמחות')) && (
           <div
