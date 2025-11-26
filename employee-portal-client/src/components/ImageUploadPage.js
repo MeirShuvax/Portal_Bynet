@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Form, Button, Alert, Spinner } from 'react-b
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { fetchImages, uploadImage, deleteImage } from '../services/systemContentService';
 import { PRIMARY_RED, PRIMARY_BLACK, WHITE, getImageUrl } from '../constants';
-import { FaUpload, FaTrash, FaImage, FaLock } from 'react-icons/fa';
+import { FaUpload, FaTrash, FaImage, FaLock, FaArrowRight } from 'react-icons/fa';
 
 const ImageUploadPage = () => {
   const { user } = useOutletContext();
@@ -164,9 +164,33 @@ const ImageUploadPage = () => {
 
   return (
     <Container className="py-4" dir="rtl">
+      <Row className="justify-content-center mb-4">
+        <Col md={10} lg={8}>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h2 style={{ color: PRIMARY_RED }}>
+                <FaImage className="me-2" />
+                ניהול תמונות
+              </h2>
+              <p className="text-muted mb-0">
+                העלאה, עדכון ומחיקה של תמונות עבור "תמונת השבוע" וכלל התכנים הוויזואליים
+              </p>
+            </div>
+            <div>
+              <Button
+                variant="outline-secondary"
+                onClick={() => navigate('/admin/settings')}
+              >
+                <FaArrowRight className="me-1" />
+                חזור להגדרות
+              </Button>
+            </div>
+          </div>
+        </Col>
+      </Row>
+
       <Row className="justify-content-center">
         <Col md={10} lg={8}>
-          <h2 className="mb-4" style={{ color: PRIMARY_RED }}>📸 ניהול תמונות - תמונת השבוע</h2>
 
           {/* טופס העלאה */}
           <Card className="mb-4 shadow-sm">

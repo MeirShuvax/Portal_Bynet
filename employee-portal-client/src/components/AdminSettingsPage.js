@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { FaImages, FaUsersCog, FaLock, FaLink } from 'react-icons/fa';
+import { FaImages, FaUsersCog, FaLock, FaLink, FaBullhorn, FaTrophy } from 'react-icons/fa';
 
 const AdminSettingsPage = () => {
   const { user } = useOutletContext();
@@ -108,6 +108,44 @@ const AdminSettingsPage = () => {
                 onClick={() => navigate('/admin/links')}
               >
                 עבור לניהול קישורים
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col className="mb-4">
+          <Card className="h-100 shadow-sm">
+            <Card.Body className="d-flex flex-column align-items-center text-center">
+              <FaBullhorn size={48} className="mb-3" style={{ color: '#bf2e1a' }} />
+              <h4 className="mb-2">ניהול עדכונים</h4>
+              <p className="text-muted mb-4">
+                צור, ערוך ומחק עדכונים והודעות המוצגים בדף העדכונים של הפורטל.
+              </p>
+              <Button
+                variant="primary"
+                style={{ backgroundColor: '#bf2e1a', borderColor: '#bf2e1a' }}
+                onClick={() => navigate('/admin/updates')}
+              >
+                עבור לניהול עדכונים
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col className="mb-4">
+          <Card className="h-100 shadow-sm">
+            <Card.Body className="d-flex flex-column align-items-center text-center">
+              <FaTrophy size={48} className="mb-3" style={{ color: '#bf2e1a' }} />
+              <h4 className="mb-2">ניהול הוקרות</h4>
+              <p className="text-muted mb-4">
+                הוסף, ערוך ומחק הוקרות לעובדים - ימי הולדת, ברוכים הבאים, מצטיינים, ברכות ושמחות.
+              </p>
+              <Button
+                variant="primary"
+                style={{ backgroundColor: '#bf2e1a', borderColor: '#bf2e1a' }}
+                onClick={() => navigate('/admin/honors')}
+              >
+                עבור לניהול הוקרות
               </Button>
             </Card.Body>
           </Card>

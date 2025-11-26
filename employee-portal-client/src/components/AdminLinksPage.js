@@ -10,8 +10,8 @@ import {
   Form,
   Spinner
 } from 'react-bootstrap';
-import { useOutletContext } from 'react-router-dom';
-import { FaLink, FaPlus, FaEdit, FaTrash, FaLock, FaSyncAlt } from 'react-icons/fa';
+import { useOutletContext, useNavigate } from 'react-router-dom';
+import { FaLink, FaPlus, FaEdit, FaTrash, FaLock, FaSyncAlt, FaArrowRight } from 'react-icons/fa';
 import { getAllLinks, createLink, updateLink, deleteLink } from '../services/importantLinksService';
 
 const DEFAULT_LINK = {
@@ -22,6 +22,7 @@ const DEFAULT_LINK = {
 
 const AdminLinksPage = () => {
   const { user } = useOutletContext();
+  const navigate = useNavigate();
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -160,44 +161,57 @@ const AdminLinksPage = () => {
 
   return (
     <Container className="py-4" dir="rtl">
-      <Row className="justify-content-between align-items-center mb-4">
-        <Col md={6}>
-          <h2 style={{ color: '#bf2e1a' }}>
-            <FaLink className="ms-2" />
-            ניהול קישורים חשובים
-          </h2>
-          <p className="text-muted">
-            הוסף, ערוך ומחק קישורים שמופיעים בדף הקישורים החשובים של הפורטל.
-          </p>
-        </Col>
-        <Col md={6} className="text-md-end text-center mt-3 mt-md-0">
-          <Button variant="outline-secondary" className="ms-2" onClick={loadLinks} disabled={loading}>
-            <FaSyncAlt className="ms-2" />
-            רענן
-          </Button>
-          <Button
-            variant="primary"
-            style={{ backgroundColor: '#bf2e1a', borderColor: '#bf2e1a' }}
-            onClick={handleOpenCreate}
-          >
-            <FaPlus className="ms-2" />
-            הוסף קישור
-          </Button>
+      <Row className="justify-content-center mb-4">
+        <Col md={12} lg={10}>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h2 style={{ color: '#bf2e1a' }}>
+                <FaLink className="me-2" />
+                ניהול קישורים חשובים
+              </h2>
+              <p className="text-muted mb-0">
+                הוסף, ערוך ומחק קישורים שמופיעים בדף הקישורים החשובים של הפורטל
+              </p>
+            </div>
+            <div>
+              <Button
+                variant="outline-secondary"
+                className="me-2"
+                onClick={() => navigate('/admin/settings')}
+              >
+                <FaArrowRight className="me-1" />
+                חזור להגדרות
+              </Button>
+              <Button
+                variant="outline-secondary"
+                className="me-2"
+                onClick={loadLinks}
+                disabled={loading}
+              >
+                <FaSyncAlt className="me-1" />
+                רענן
+              </Button>
+              <Button
+                variant="primary"
+                style={{ backgroundColor: '#bf2e1a', borderColor: '#bf2e1a' }}
+                onClick={handleOpenCreate}
+              >
+                <FaPlus className="me-1" />
+                הוסף קישור
+              </Button>
+            </div>
+          </div>
         </Col>
       </Row>
 
-      {error && (
-        <Row className="mb-3">
-          <Col>
-            <div className="alert alert-danger" role="alert">
+      <Row className="justify-content-center">
+        <Col md={12} lg={10}>
+          {error && (
+            <div className="alert alert-danger mb-3" role="alert">
               {error}
             </div>
-          </Col>
-        </Row>
-      )}
+          )}
 
-      <Row>
-        <Col>
           <Card className="shadow-sm">
             <Card.Body className="p-0">
               {loading ? (
@@ -211,43 +225,88 @@ const AdminLinksPage = () => {
                 </div>
               ) : (
                 <div className="table-responsive">
-                  <Table striped hover className="mb-0">
+                  <Table hover className="mb-0">
                     <thead style={{ backgroundColor: '#f8f9fa' }}>
                       <tr>
-                        <th>כותרת</th>
-                        <th>כתובת URL</th>
-                        <th>תיאור</th>
-                        <th className="text-center">פעולות</th>
+                        <th style={{ width: '20%', padding: '14px 12px' }}>כותרת</th>
+                        <th style={{ width: '30%', padding: '14px 12px' }}>כתובת URL</th>
+                        <th style={{ width: '30%', padding: '14px 12px' }}>תיאור</th>
+                        <th style={{ width: '20%', padding: '14px 12px', textAlign: 'center' }}>פעולות</th>
                       </tr>
                     </thead>
                     <tbody>
                       {links.map((link) => (
-                        <tr key={link.id}>
-                          <td>{link.title}</td>
-                          <td>
-                            <a href={link.url} target="_blank" rel="noopener noreferrer">
-                              {link.url}
+                        <tr key={link.id} style={{ borderBottom: '1px solid #e9ecef' }}>
+                          <td style={{ padding: '16px 12px', verticalAlign: 'middle' }}>
+                            <div style={{ fontWeight: '600', color: '#1a202c', fontSize: '15px' }}>
+                              {link.title}
+                            </div>
+                          </td>
+                          <td style={{ padding: '16px 12px', verticalAlign: 'middle' }}>
+                            <a 
+                              href={link.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              style={{ 
+                                color: '#0d6efd', 
+                                textDecoration: 'none',
+                                fontSize: '14px',
+                                wordBreak: 'break-all'
+                              }}
+                              onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
+                              onMouseOut={(e) => e.target.style.textDecoration = 'none'}
+                            >
+                              {link.url.length > 60 ? link.url.substring(0, 60) + '...' : link.url}
                             </a>
                           </td>
-                          <td>{link.description}</td>
-                          <td className="text-center">
-                            <Button
-                              variant="outline-secondary"
-                              size="sm"
-                              className="ms-2"
-                              onClick={() => handleOpenEdit(link)}
-                            >
-                              <FaEdit className="ms-1" />
-                              ערוך
-                            </Button>
-                            <Button
-                              variant="outline-danger"
-                              size="sm"
-                              onClick={() => handleDelete(link.id)}
-                            >
-                              <FaTrash className="ms-1" />
-                              מחק
-                            </Button>
+                          <td style={{ padding: '16px 12px', verticalAlign: 'middle' }}>
+                            {link.description ? (
+                              <span style={{ color: '#495057', fontSize: '14px' }}>
+                                {link.description.length > 50 
+                                  ? link.description.substring(0, 50) + '...' 
+                                  : link.description}
+                              </span>
+                            ) : (
+                              <span style={{ color: '#adb5bd', fontStyle: 'italic', fontSize: '13px' }}>
+                                ללא תיאור
+                              </span>
+                            )}
+                          </td>
+                          <td style={{ padding: '16px 12px', verticalAlign: 'middle', textAlign: 'center' }}>
+                            <div className="d-flex justify-content-center gap-2">
+                              <Button
+                                variant="light"
+                                size="sm"
+                                onClick={() => handleOpenEdit(link)}
+                                title="ערוך קישור"
+                                style={{
+                                  padding: '6px 12px',
+                                  border: '1px solid #dee2e6',
+                                  color: '#495057',
+                                  backgroundColor: 'white',
+                                  fontSize: '14px'
+                                }}
+                              >
+                                <FaEdit className="me-1" />
+                                ערוך
+                              </Button>
+                              <Button
+                                variant="light"
+                                size="sm"
+                                onClick={() => handleDelete(link.id)}
+                                title="מחק קישור"
+                                style={{
+                                  padding: '6px 12px',
+                                  border: '1px solid #dee2e6',
+                                  color: '#dc3545',
+                                  backgroundColor: 'white',
+                                  fontSize: '14px'
+                                }}
+                              >
+                                <FaTrash className="me-1" />
+                                מחק
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -260,61 +319,101 @@ const AdminLinksPage = () => {
         </Col>
       </Row>
 
-      <Modal show={showModal} onHide={handleCloseModal} centered dir="rtl">
+      <Modal show={showModal} onHide={handleCloseModal} size="lg" dir="rtl">
         <Form onSubmit={handleSubmit}>
-          <Modal.Header closeButton>
-            <Modal.Title>{isEdit ? 'עדכון קישור' : 'הוספת קישור חדש'}</Modal.Title>
+          <Modal.Header closeButton style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #bf2e1a' }}>
+            <Modal.Title style={{ color: '#bf2e1a', fontWeight: 'bold' }}>
+              <FaLink className="me-2" />
+              {isEdit ? 'עדכון קישור' : 'הוספת קישור חדש'}
+            </Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            <Form.Group className="mb-3">
-              <Form.Label>כותרת</Form.Label>
+          <Modal.Body style={{ padding: '24px' }}>
+            {error && (
+              <div className="alert alert-danger mb-3" role="alert">
+                {error}
+              </div>
+            )}
+            
+            <Form.Group className="mb-4">
+              <Form.Label style={{ fontWeight: '600', color: '#495057' }}>
+                📌 כותרת *
+              </Form.Label>
               <Form.Control
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
                 required
+                style={{ padding: '10px', fontSize: '15px' }}
+                placeholder="לדוגמה: אנשי קשר Microsoft 365"
               />
+              <Form.Text className="text-muted" style={{ fontSize: '13px' }}>
+                שם הקישור שיוצג למשתמשים
+              </Form.Text>
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>כתובת URL</Form.Label>
+
+            <Form.Group className="mb-4">
+              <Form.Label style={{ fontWeight: '600', color: '#495057' }}>
+                🔗 כתובת URL *
+              </Form.Label>
               <Form.Control
                 type="url"
                 name="url"
                 value={formData.url}
                 onChange={handleChange}
                 required
+                style={{ padding: '10px', fontSize: '15px' }}
+                placeholder="https://example.com"
               />
+              <Form.Text className="text-muted" style={{ fontSize: '13px' }}>
+                כתובת מלאה של הקישור (חייבת להתחיל ב-http:// או https://)
+              </Form.Text>
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>תיאור</Form.Label>
+
+            <Form.Group className="mb-4">
+              <Form.Label style={{ fontWeight: '600', color: '#495057' }}>
+                📝 תיאור (אופציונלי)
+              </Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="תיאור קצר של הקישור (אופציונלי)"
+                placeholder="תיאור קצר של הקישור - מה המשתמשים ימצאו בו..."
+                style={{ padding: '10px', fontSize: '15px' }}
               />
+              <Form.Text className="text-muted" style={{ fontSize: '13px' }}>
+                הסבר קצר שיעזור למשתמשים להבין למה הקישור מיועד
+              </Form.Text>
             </Form.Group>
           </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
+          <Modal.Footer style={{ padding: '16px 24px' }}>
+            <Button 
+              variant="secondary" 
+              onClick={handleCloseModal}
+              style={{ padding: '8px 20px' }}
+            >
               ביטול
             </Button>
             <Button
               type="submit"
               variant="primary"
-              style={{ backgroundColor: '#bf2e1a', borderColor: '#bf2e1a' }}
+              style={{ 
+                backgroundColor: '#bf2e1a', 
+                borderColor: '#bf2e1a',
+                padding: '8px 20px',
+                fontWeight: '600'
+              }}
               disabled={saving}
             >
               {saving ? (
                 <>
-                  <Spinner animation="border" size="sm" className="ms-2" />
+                  <Spinner animation="border" size="sm" className="me-2" />
                   שומר...
                 </>
               ) : (
-                'שמור'
+                isEdit ? '✓ עדכן קישור' : '✓ צור קישור'
               )}
             </Button>
           </Modal.Footer>
