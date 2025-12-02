@@ -115,8 +115,9 @@ export default function LiveUpdates({ compact = false }) {
             {!loading && !error && (
               <div style={{ overflow: 'hidden' }}>
                 {updates.length > 0 ? (
-                  updates.slice(0, 2).map((update, idx) => {
+                  updates.slice(-2).map((update, idx) => {
                     const isExpired = new Date(update.expiry_date) < new Date();
+                    const contentIsLong = update.content.length > 100;
                     return (
                       <div
                         key={update.id || idx}
@@ -126,10 +127,8 @@ export default function LiveUpdates({ compact = false }) {
                           borderRight: `4px solid ${isExpired ? '#dee2e6' : PRIMARY_RED}`,
                           borderRadius: 8,
                           background: isExpired ? 'rgba(222, 226, 230, 0.2)' : 'rgba(191, 46, 26, 0.05)',
-                          cursor: 'pointer',
-                          marginBottom: idx < updates.slice(0, 2).length - 1 ? '12px' : '0'
+                          marginBottom: idx < updates.slice(-2).length - 1 ? '12px' : '0'
                         }}
-                        onClick={() => navigate('/updates')}
                       >
                         <h6 style={{ 
                           color: PRIMARY_RED, 
@@ -140,15 +139,50 @@ export default function LiveUpdates({ compact = false }) {
                         }}>
                           {update.title}
                         </h6>
-                        <p className="mb-0" style={{ 
-                          wordBreak: 'break-word', 
-                          whiteSpace: 'pre-wrap',
-                          fontSize: '0.9rem',
-                          lineHeight: '1.5',
-                          color: '#495057'
-                        }}>
-                          {update.content.length > 100 ? `${update.content.substring(0, 100)}...` : update.content}
-                        </p>
+                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', flexWrap: 'wrap' }}>
+                          <p className="mb-0" style={{ 
+                            wordBreak: 'break-word', 
+                            whiteSpace: 'pre-wrap',
+                            fontSize: '0.9rem',
+                            lineHeight: '1.5',
+                            color: '#495057',
+                            flex: 1,
+                            minWidth: 0
+                          }}>
+                            {contentIsLong ? `${update.content.substring(0, 100)}...` : update.content}
+                          </p>
+                          {contentIsLong && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate('/updates');
+                              }}
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: PRIMARY_RED,
+                                fontSize: '0.75rem',
+                                textDecoration: 'underline',
+                                cursor: 'pointer',
+                                padding: 0,
+                                fontWeight: '500',
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                                alignSelf: 'flex-end'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.target.style.textDecoration = 'none';
+                                e.target.style.color = '#a02615';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.target.style.textDecoration = 'underline';
+                                e.target.style.color = PRIMARY_RED;
+                              }}
+                            >
+                              ראה יותר
+                            </button>
+                          )}
+                        </div>
                       </div>
                     );
                   })

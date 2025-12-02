@@ -72,7 +72,7 @@ export default function HomePage() {
           {/* Row 3: Complex Layout */}
           <motion.div variants={itemVariants}>
             <Row className="mb-4">
-              <Col md={9} style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }} className="no-scrollbar">
+              <Col md={9} style={{ height: 'calc(100vh - 200px)', overflowY: 'auto' }} className="no-scrollbar">
                 <Row className="mb-4">
                   <Col md={12} className="mb-4">
                     <PhotoOfWeek />
