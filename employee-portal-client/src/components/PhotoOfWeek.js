@@ -139,7 +139,7 @@ const PhotoOfWeek = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  minHeight: 200,
+                  minHeight: 180,
                   cursor: 'zoom-in'
                 }}
                 onClick={() => handleImageClick(index)}
@@ -157,7 +157,7 @@ const PhotoOfWeek = () => {
                   alt={img.title || 'תמונת השבוע'}
                   style={{
                     maxWidth: '100%',
-                    maxHeight: 150,
+                    maxHeight: 130,
                     width: 'auto',
                     height: 'auto',
                     borderRadius: 16,
@@ -170,9 +170,8 @@ const PhotoOfWeek = () => {
                     transformOrigin: 'center'
                   }}
                 />
-                <div style={{ marginTop: 10, textAlign: 'center' }}>
-                  <div style={{ fontWeight: 'bold', color: PRIMARY_RED, fontSize: '1.1rem' }}>{img.title}</div>
-                  <div style={{ color: PRIMARY_BLACK, fontSize: '0.95rem' }}>{img.description}</div>
+                <div style={{ marginTop: 8, textAlign: 'center' }}>
+                  <div style={{ fontWeight: 'bold', color: PRIMARY_RED, fontSize: '1rem' }}>{img.title}</div>
                 </div>
               </div>
             </SwiperSlide>
@@ -209,6 +208,9 @@ const PhotoOfWeek = () => {
           }
           .custom-dot-active {
             background: ${PRIMARY_RED} !important;
+          }
+          .swiper-pagination {
+            bottom: var(--swiper-pagination-bottom, 0px) !important;
           }
           .photo-week-overlay {
             position: fixed;

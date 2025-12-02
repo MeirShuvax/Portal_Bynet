@@ -25,7 +25,7 @@ const WelcomeBanner = ({ imageUrl }) => {
             style={{
                 background: 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)',
                 borderRadius: '15px',
-                padding: '1rem 1.5rem',
+                padding: '0.5rem 1rem',
                 margin: '0 auto',
                 width: '100%',
                 boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',

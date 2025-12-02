@@ -295,7 +295,7 @@ const OrganizationalChart = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}` // אם יש token
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}` // אם יש token
         },
         body: JSON.stringify({
           htmlContent: chartHTML
@@ -574,19 +574,51 @@ const OrganizationalChart = () => {
     const loadUsers = async () => {
       try {
         setLoading(true);
-        // משתמש ב-API שמחזיר את כל המשתמשים (לא רק עם תמונות)
-        const response = await fetch(`${API_BASE_URL}/api/users`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch users');
+        console.log('🔄 Loading organizational chart data...');
+        
+        // המתן לטוקן - לעיתים הטוקן לא מוכן מיד
+        let token = localStorage.getItem('authToken');
+        let retries = 0;
+        const maxRetries = 5;
+        
+        while (!token && retries < maxRetries) {
+          console.log(`⏳ Waiting for auth token... (attempt ${retries + 1}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, 500));
+          token = localStorage.getItem('authToken');
+          retries++;
         }
+        
+        if (!token) {
+          throw new Error('לא נמצא טוקן אימות. אנא התחבר מחדש.');
+        }
+        
+        console.log('🔑 Token found!');
+        
+        // משתמש ב-API שמחזיר את כל המשתמשים (לא רק עם תמונות)
+        const response = await fetch(`${API_BASE_URL}/api/users/team`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        console.log('📡 Response status:', response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ API Error:', errorText);
+          throw new Error(`Failed to fetch users: ${response.status} - ${errorText}`);
+        }
+        
         const data = await response.json();
-        console.log('Users loaded:', data);
+        console.log('✅ Users loaded successfully:', data.length, 'users');
         setUsers(data);
         const tree = buildOrgTree(data);
+        console.log('🌳 Org tree built:', tree.length, 'root nodes');
         setOrgTree(tree);
       } catch (err) {
-        setError('שגיאה בטעינת מבנה ארגוני');
-        console.error('Error loading users:', err);
+        setError('שגיאה בטעינת מבנה ארגוני: ' + err.message);
+        console.error('❌ Error loading users:', err);
       } finally {
         setLoading(false);
       }

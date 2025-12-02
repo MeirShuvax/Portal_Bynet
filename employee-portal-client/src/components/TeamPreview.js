@@ -117,7 +117,7 @@ const TeamPreview = () => {
       >
         <Swiper
           modules={[Autoplay]}
-          spaceBetween={8}
+          spaceBetween={12}
           slidesPerView={3}
           centeredSlides={false}
           autoplay={{
@@ -128,15 +128,15 @@ const TeamPreview = () => {
           breakpoints={{
             320: {
               slidesPerView: 3,
-              spaceBetween: 4
+              spaceBetween: 8
             },
             768: {
               slidesPerView: 3,
-              spaceBetween: 6
+              spaceBetween: 10
             },
             1024: {
               slidesPerView: 3,
-              spaceBetween: 8
+              spaceBetween: 12
             }
           }}
         >

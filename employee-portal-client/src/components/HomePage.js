@@ -71,11 +71,14 @@ export default function HomePage() {
           
           {/* Row 3: Complex Layout */}
           <motion.div variants={itemVariants}>
-            <Row className="mb-4" style={{ minHeight: '400px' }}>
-              <Col md={9} style={{ maxHeight: '400px', overflowY: 'auto' }} className="no-scrollbar">
+            <Row className="mb-4">
+              <Col md={9} style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }} className="no-scrollbar">
                 <Row className="mb-4">
-                  <Col md={12}>
+                  <Col md={12} className="mb-4">
                     <PhotoOfWeek />
+                  </Col>
+                  <Col md={12} className="text-center">
+                    <LiveUpdates compact={true} />
                   </Col>
                 </Row>
                 <HonorCardsList />
@@ -87,9 +90,9 @@ export default function HomePage() {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={12} className="text-center">
-                    <LiveUpdates />
-                  </Col>
+                  {/* <Col md={12} className="text-center">
+                    <LiveUpdates compact={true} />
+                  </Col> */}
                 </Row>
               </Col>
             </Row>

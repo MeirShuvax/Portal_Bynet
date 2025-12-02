@@ -43,7 +43,7 @@ const UpdateItem = ({ update, defaultExpanded = false }) => {
   );
 };
 
-export default function LiveUpdates() {
+export default function LiveUpdates({ compact = false }) {
   const [updates, setUpdates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,6 +68,104 @@ export default function LiveUpdates() {
     fetchUpdates();
   }, [showAll]);
 
+  if (compact) {
+    // גרסה קומפקטית לדף הבית
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card className="shadow-sm border-0" style={{ borderRadius: 15, background: '#fff' }}>
+          <Card.Body style={{ padding: '16px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <h6 className="fw-bold mb-0" style={{ color: PRIMARY_RED, fontSize: '1rem' }}>עדכונים לייב</h6>
+              <button
+                onClick={() => navigate('/updates')}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: PRIMARY_RED,
+                  fontSize: '0.8rem',
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  padding: '2px 6px',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = 'rgba(191, 46, 26, 0.1)';
+                  e.target.style.textDecoration = 'underline';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.textDecoration = 'none';
+                }}
+              >
+                <FaArrowLeft style={{ fontSize: '0.7rem' }} />
+                כל העדכונים
+              </button>
+            </div>
+            
+            {loading && <div className="text-center py-2"><Spinner animation="border" size="sm" /></div>}
+            {error && <Alert variant="danger" className="py-2">{error}</Alert>}
+            {!loading && !error && (
+              <div style={{ overflow: 'hidden' }}>
+                {updates.length > 0 ? (
+                  updates.slice(0, 2).map((update, idx) => {
+                    const isExpired = new Date(update.expiry_date) < new Date();
+                    return (
+                      <div
+                        key={update.id || idx}
+                        className="mb-3 p-3 text-end"
+                        style={{
+                          opacity: isExpired ? 0.6 : 1,
+                          borderRight: `4px solid ${isExpired ? '#dee2e6' : PRIMARY_RED}`,
+                          borderRadius: 8,
+                          background: isExpired ? 'rgba(222, 226, 230, 0.2)' : 'rgba(191, 46, 26, 0.05)',
+                          cursor: 'pointer',
+                          marginBottom: idx < updates.slice(0, 2).length - 1 ? '12px' : '0'
+                        }}
+                        onClick={() => navigate('/updates')}
+                      >
+                        <h6 style={{ 
+                          color: PRIMARY_RED, 
+                          fontWeight: 'bold', 
+                          fontSize: '0.95rem', 
+                          marginBottom: '8px',
+                          lineHeight: '1.3'
+                        }}>
+                          {update.title}
+                        </h6>
+                        <p className="mb-0" style={{ 
+                          wordBreak: 'break-word', 
+                          whiteSpace: 'pre-wrap',
+                          fontSize: '0.9rem',
+                          lineHeight: '1.5',
+                          color: '#495057'
+                        }}>
+                          {update.content.length > 100 ? `${update.content.substring(0, 100)}...` : update.content}
+                        </p>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-center text-muted" style={{ fontSize: '0.9rem', padding: '12px' }}>
+                    אין עדכונים חדשים.
+                  </p>
+                )}
+              </div>
+            )}
+          </Card.Body>
+        </Card>
+      </motion.div>
+    );
+  }
+
+  // גרסה מלאה
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
