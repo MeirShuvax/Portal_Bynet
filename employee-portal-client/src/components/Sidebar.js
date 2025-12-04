@@ -308,6 +308,24 @@ const Sidebar = ({ onNavigate = () => {} }) => {
               >
                 <FaCalendarCheck style={{ marginLeft: '8px' }} /> לוח בטיחות
               </button>
+              <button
+                onClick={() => handleFileOpen('מדיניות חופשות_.pdf', 'pdf')}
+                style={{
+                  color: 'white',
+                  fontSize: '0.9rem',
+                  padding: '8px 16px',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  width: '100%',
+                  textAlign: 'right',
+                  cursor: 'pointer',
+                  display: 'block'
+                }}
+                onMouseEnter={(e) => (e.target.style.backgroundColor = '#4a5568')}
+                onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
+              >
+                <FaCalendarAlt style={{ marginLeft: '8px' }} /> מדיניות חופשות
+              </button>
             </div>
           )}
         </div>
