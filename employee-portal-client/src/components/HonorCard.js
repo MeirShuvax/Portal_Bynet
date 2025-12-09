@@ -58,7 +58,7 @@ const HonorCard = ({ honorType, people = [] }) => {
     >
       <Card.Body className="d-flex flex-column align-items-center justify-content-between p-2">
     
-        {isBirthday && (
+        {/* {isBirthday && (
           <div 
             className="rotating-text"
             style={{
@@ -78,10 +78,9 @@ const HonorCard = ({ honorType, people = [] }) => {
           >
             🎉 מזל טוב לאפרת ! 🎉
           </div>
-        )}
+        )} */}
 
-        {/* Awesome welcome text for פאולה */}
-        {/* {honorType.name === 'ברוכים הבאים' && (
+        {honorType.name === 'ברוכים הבאים' && (
           <div 
             className="rotating-text"
             style={{
@@ -99,9 +98,9 @@ const HonorCard = ({ honorType, people = [] }) => {
               border: '2px solid rgba(255,255,255,0.8)'
             }}
           >
-            👋 ברוכים הבאים לפאולה! 👋
+            👋 ברוכים הבאים לדוד! 👋
           </div>
-        )} */}
+        )}
 
         {(honorType.name === 'שמחות' || honorType.name?.includes('שמחות')) && (
           <div
@@ -121,7 +120,7 @@ const HonorCard = ({ honorType, people = [] }) => {
               border: '2px solid rgba(255,255,255,0.8)'
             }}
           >
-            👶 נסיך נולד לעמית 👶
+            👶 נסיכה נולדה לניסים 👶
           </div>
         )}
         
